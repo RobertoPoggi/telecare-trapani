@@ -1258,9 +1258,14 @@
 
             mostraLoading('Salvataggio in corso...');
 
+            // Timeout personalizzato per iPhone (30 secondi)
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
+
             fetch(DEPLOY_URL, {
                 method: 'POST',
                 mode: 'no-cors',
+                signal: controller.signal,
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -1270,6 +1275,7 @@
                 })
             })
             .then(() => {
+                clearTimeout(timeoutId);
                 nascondiLoading();
                 mostraMessaggio('success', `✅ Salvataggio effettuato! Scheda N° ${schedaData.numeroScheda} salvata con successo.`);
                 
@@ -1279,14 +1285,18 @@
                 }, 1500);
             })
             .catch(error => {
+                clearTimeout(timeoutId);
                 nascondiLoading();
                 console.error('Errore:', error);
-                mostraMessaggio('info', `ℹ️ Scheda inviata al server. Apertura nuova scheda...`);
-                
-                setTimeout(() => {
-                    caricaSchede();
-                    nuovaSchedaAutomatico();
-                }, 2000);
+                if (error.name === 'AbortError') {
+                    mostraMessaggio('error', `⏱️ Timeout durante il salvataggio. Riprova.`);
+                } else {
+                    mostraMessaggio('info', `ℹ️ Scheda inviata al server. Apertura nuova scheda...`);
+                    setTimeout(() => {
+                        caricaSchede();
+                        nuovaSchedaAutomatico();
+                    }, 2000);
+                }
             });
         }
 
@@ -1311,8 +1321,15 @@
 
             aggiornaStato('loading', 'Caricamento schede...');
 
-            fetch(DEPLOY_URL + '?action=getAll')
-                .then(response => response.json())
+            // Timeout personalizzato per iPhone (30 secondi)
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+            fetch(DEPLOY_URL + '?action=getAll', { signal: controller.signal })
+                .then(response => {
+                    clearTimeout(timeoutId);
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
                         schedeCache = data.data || [];
@@ -1328,9 +1345,15 @@
                     }
                 })
                 .catch(error => {
+                    clearTimeout(timeoutId);
                     console.error('Errore:', error);
-                    aggiornaStato('disconnected', '❌ Errore connessione');
-                    mostraMessaggio('error', 'Errore di connessione al server Google Sheets');
+                    if (error.name === 'AbortError') {
+                        aggiornaStato('disconnected', '⏱️ Timeout - Riprova');
+                        mostraMessaggio('error', 'La connessione ha impiegato troppo tempo. Prova a ricaricare.');
+                    } else {
+                        aggiornaStato('disconnected', '❌ Errore connessione');
+                        mostraMessaggio('error', 'Errore di connessione al server Google Sheets');
+                    }
                 });
         }
 
