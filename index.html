@@ -297,11 +297,13 @@
 
         .date-input-group input[name="giorno"],
         .date-input-group input[name="mese"] {
-            width: 60px;
+            width: 70px;
+            min-width: 70px;
         }
 
         .date-input-group input[name="anno"] {
-            width: 80px;
+            width: 90px;
+            min-width: 90px;
         }
 
         .date-input-group span {
@@ -1161,22 +1163,32 @@
             const mese = document.getElementById('mese');
             const anno = document.getElementById('anno');
 
+            if (!giorno || !mese || !anno) {
+                console.error('Campi data non trovati');
+                return;
+            }
+
             // Auto-jump tra campi
             giorno.addEventListener('input', function() {
-                if (this.value.length === 2) {
+                if (this.value.length >= 2) {
                     mese.focus();
+                    mese.select();
                 }
                 calcolaEta();
             });
 
             mese.addEventListener('input', function() {
-                if (this.value.length === 2) {
+                if (this.value.length >= 2) {
                     anno.focus();
+                    anno.select();
                 }
                 calcolaEta();
             });
 
             anno.addEventListener('input', function() {
+                if (this.value.length >= 4) {
+                    this.blur(); // Rimuove il focus dopo 4 cifre
+                }
                 calcolaEta();
             });
 
