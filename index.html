@@ -1372,12 +1372,16 @@
         }
 
         // Carica tutte le schede da Google Sheets
+        // Contatore retry per evitare loop infinito
+        let retryCount = 0;
+        const MAX_RETRY = 2; // Massimo 2 retry (totale 3 tentativi)
+        
         function caricaSchede() {
             if (!verificaConfigurazione()) {
                 return;
             }
 
-            console.log('caricaSchede() - Inizio');
+            console.log('caricaSchede() - Inizio (tentativo ' + (retryCount + 1) + '/' + (MAX_RETRY + 1) + ')');
             aggiornaStato('loading', 'Caricamento schede...');
 
             // Timeout ridotto a 5 secondi per iPhone
@@ -1387,13 +1391,21 @@
                 controller.abort();
             }, 5000);
 
-            console.log('Avvio fetch verso:', DEPLOY_URL + '?action=getAll');
+            // Aggiungi timestamp per forzare ricaricamento (evita cache Safari)
+            const timestamp = new Date().getTime();
+            const url = DEPLOY_URL + '?action=getAll&t=' + timestamp;
+            console.log('Avvio fetch verso:', url);
 
-            fetch(DEPLOY_URL + '?action=getAll', { 
+            fetch(url, { 
                 signal: controller.signal,
                 method: 'GET',
                 mode: 'cors',
-                cache: 'no-cache'
+                cache: 'no-cache',
+                headers: {
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0'
+                }
             })
                 .then(response => {
                     clearTimeout(timeoutId);
@@ -1416,6 +1428,9 @@
                         aggiornaStato('connected', `✅ Connesso - ${schedeCache.length} schede caricate`);
                         document.getElementById('totalSchede').textContent = schedeCache.length;
                         
+                        // Reset contatore retry dopo successo
+                        retryCount = 0;
+                        
                         aggiornaStatistiche();
                     } else {
                         console.error('Errore nel response data:', data.message);
@@ -1428,11 +1443,24 @@
                     
                     if (error.name === 'AbortError') {
                         console.log('Fetch abortita per timeout');
-                        aggiornaStato('disconnected', '⏱️ Timeout (5s)');
-                        // Non bloccare l'utente, permetti comunque l'uso del form
+                        
+                        // RETRY AUTOMATICO se non superato limite
+                        if (retryCount < MAX_RETRY) {
+                            retryCount++;
+                            console.log('Ritento automaticamente tra 2 secondi... (tentativo ' + (retryCount + 1) + '/' + (MAX_RETRY + 1) + ')');
+                            aggiornaStato('loading', '⏱️ Timeout - Riprovo (' + (retryCount + 1) + '/' + (MAX_RETRY + 1) + ')...');
+                            
+                            setTimeout(function() {
+                                caricaSchede();
+                            }, 2000);
+                        } else {
+                            console.log('Raggiunto limite retry (' + (MAX_RETRY + 1) + ' tentativi)');
+                            aggiornaStato('connected', '✅ Pronto (offline)');
+                            retryCount = 0; // Reset per prossimo caricamento manuale
+                        }
                     } else {
                         console.log('Errore di rete o altro:', error.message);
-                        aggiornaStato('disconnected', '❌ Errore: ' + error.message.substring(0, 20));
+                        aggiornaStato('disconnected', '❌ Errore connessione');
                     }
                     
                     // In ogni caso, il form deve essere utilizzabile
