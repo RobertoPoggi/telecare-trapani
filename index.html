@@ -297,13 +297,11 @@
 
         .date-input-group input[name="giorno"],
         .date-input-group input[name="mese"] {
-            width: 70px;
-            min-width: 70px;
+            width: 60px;
         }
 
         .date-input-group input[name="anno"] {
-            width: 90px;
-            min-width: 90px;
+            width: 80px;
         }
 
         .date-input-group span {
@@ -602,7 +600,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="version-badge">📋 v3.4</div>
+            <div class="version-badge">📋 v3.3</div>
             <h1>📋 SCHEDA RACCOLTA DATI ASSISTITO</h1>
             <p>Comune di Trapani - Distretto 50</p>
             <p style="font-size: 14px; opacity: 0.9; margin-top: 5px;">
@@ -616,8 +614,8 @@
 
         <div class="status-bar">
             <div class="status-indicator">
-                <div class="status-dot connected" id="statusDot"></div>
-                <span id="statusText">✅ Pronto per l'uso</span>
+                <div class="status-dot disconnected" id="statusDot"></div>
+                <span id="statusText">Inizializzazione...</span>
             </div>
             <div class="status-indicator">
                 📊 Schede totali: <strong id="totalSchede">-</strong>
@@ -1149,78 +1147,19 @@
             'Buseto Palizzolo': 2
         };
 
-        // Fallback assoluto: dopo 6 secondi forza stato utilizzabile
-        let inizializzazioneCompletata = false;
-        
-        setTimeout(function() {
-            if (!inizializzazioneCompletata) {
-                console.warn('FALLBACK: Inizializzazione forzata dopo 6 secondi');
-                aggiornaStato('disconnected', '⚠️ Modalità offline');
-                inizializzazioneCompletata = true;
-            }
-        }, 6000);
-        
         // Inizializzazione al caricamento pagina
-        function inizializza() {
-            console.log('Funzione inizializza() chiamata');
-            
-            try {
-                const configured = verificaConfigurazione();
-                impostaDataOggi();
-                setupDateInputs();
-                
-                // Carica schede solo se configurato correttamente
-                if (configured) {
-                    // Non chiamare caricaSchede qui, viene chiamata dallo script immediato
-                    console.log('URL configurato, caricamento delegato a script immediato');
-                    
-                    // Marca come completata dopo il primo tentativo
-                    setTimeout(function() {
-                        inizializzazioneCompletata = true;
-                        console.log('Inizializzazione marcata come completata');
-                    }, 1000);
-                } else {
-                    aggiornaStato('disconnected', '⚠️ Configurazione richiesta');
-                    inizializzazioneCompletata = true;
-                }
-            } catch (e) {
-                console.error('Errore in inizializza():', e);
-                aggiornaStato('disconnected', '❌ Errore inizializzazione');
-                inizializzazioneCompletata = true;
-            }
-        }
-        
-        // Prova DOMContentLoaded
-        window.addEventListener('DOMContentLoaded', inizializza);
-        
-        // Fallback per Safari iOS: prova anche 'load'
-        window.addEventListener('load', function() {
-            if (!inizializzazioneCompletata) {
-                console.log('Evento load triggered, inizializzazione non ancora completata');
-                inizializza();
-            }
+        window.addEventListener('DOMContentLoaded', function() {
+            verificaConfigurazione();
+            impostaDataOggi();
+            caricaSchede();
+            setupDateInputs();
         });
-        
-        // Ultimo fallback: se dopo 500ms non è partito nulla, avvia manualmente
-        setTimeout(function() {
-            if (typeof setupDateInputs === 'function' && document.getElementById('giorno')) {
-                const giorno = document.getElementById('giorno');
-                if (!giorno.hasAttribute('data-initialized')) {
-                    console.warn('Fallback 500ms: setupDateInputs non eseguito, avvio manuale');
-                    inizializza();
-                }
-            }
-        }, 500);
 
         // Setup campi data di nascita con salto automatico
         function setupDateInputs() {
             const giorno = document.getElementById('giorno');
             const mese = document.getElementById('mese');
             const anno = document.getElementById('anno');
-            
-            // Marca come inizializzato
-            giorno.setAttribute('data-initialized', 'true');
-            console.log('setupDateInputs() eseguita, campi marcati');
 
             // Auto-jump tra campi
             giorno.addEventListener('input', function() {
@@ -1283,13 +1222,6 @@
 
         // Verifica che l'URL sia stato configurato
         function verificaConfigurazione() {
-            // Controllo file locale
-            if (window.location.protocol === 'file:') {
-                aggiornaStato('disconnected', '⚠️ File locale - Carica su web');
-                mostraMessaggio('error', '⚠️ ATTENZIONE: Stai aprendo il file in LOCALE.\n\nSu iPhone, Safari blocca le connessioni da file locali per sicurezza.\n\nSOLUZIONE:\n1. Carica il file su Google Drive\n2. Ottieni link condivisibile\n3. Apri il link con Safari\n\nIn alternativa usa GitHub Pages.');
-                return false;
-            }
-            
             if (!DEPLOY_URL || DEPLOY_URL === 'INSERIRE_QUI_URL_GOOGLE_APPS_SCRIPT') {
                 aggiornaStato('disconnected', '⚠️ URL Google Apps Script non configurato');
                 mostraMessaggio('error', '⚠️ ATTENZIONE: Devi configurare l\'URL del Google Apps Script nel codice HTML prima di utilizzare il modulo.');
@@ -1372,99 +1304,33 @@
         }
 
         // Carica tutte le schede da Google Sheets
-        // Contatore retry per evitare loop infinito
-        let retryCount = 0;
-        const MAX_RETRY = 2; // Massimo 2 retry (totale 3 tentativi)
-        
         function caricaSchede() {
             if (!verificaConfigurazione()) {
                 return;
             }
 
-            console.log('caricaSchede() - Inizio (tentativo ' + (retryCount + 1) + '/' + (MAX_RETRY + 1) + ')');
             aggiornaStato('loading', 'Caricamento schede...');
 
-            // Timeout ridotto a 5 secondi per iPhone
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => {
-                console.log('Timeout raggiunto (5s)');
-                controller.abort();
-            }, 5000);
-
-            // Aggiungi timestamp per forzare ricaricamento (evita cache Safari)
-            const timestamp = new Date().getTime();
-            const url = DEPLOY_URL + '?action=getAll&t=' + timestamp;
-            console.log('Avvio fetch verso:', url);
-
-            fetch(url, { 
-                signal: controller.signal,
-                method: 'GET',
-                mode: 'cors',
-                cache: 'no-cache',
-                headers: {
-                    'Cache-Control': 'no-cache, no-store, must-revalidate',
-                    'Pragma': 'no-cache',
-                    'Expires': '0'
-                }
-            })
-                .then(response => {
-                    clearTimeout(timeoutId);
-                    console.log('Risposta ricevuta, status:', response.status);
-                    
-                    if (!response.ok) {
-                        throw new Error('HTTP ' + response.status);
-                    }
-                    
-                    return response.json();
-                })
+            fetch(DEPLOY_URL + '?action=getAll')
+                .then(response => response.json())
                 .then(data => {
-                    console.log('Dati parsati:', data);
-                    
                     if (data.success) {
                         schedeCache = data.data || [];
                         schedeFiltrate = schedeCache;
                         
-                        console.log('Schede caricate:', schedeCache.length);
                         aggiornaStato('connected', `✅ Connesso - ${schedeCache.length} schede caricate`);
                         document.getElementById('totalSchede').textContent = schedeCache.length;
                         
-                        // Reset contatore retry dopo successo
-                        retryCount = 0;
-                        
                         aggiornaStatistiche();
                     } else {
-                        console.error('Errore nel response data:', data.message);
                         aggiornaStato('disconnected', '❌ Errore caricamento');
+                        mostraMessaggio('error', 'Errore nel caricamento delle schede: ' + data.message);
                     }
                 })
                 .catch(error => {
-                    clearTimeout(timeoutId);
-                    console.error('Errore catch:', error.name, error.message);
-                    
-                    if (error.name === 'AbortError') {
-                        console.log('Fetch abortita per timeout');
-                        
-                        // RETRY AUTOMATICO se non superato limite
-                        if (retryCount < MAX_RETRY) {
-                            retryCount++;
-                            console.log('Ritento automaticamente tra 2 secondi... (tentativo ' + (retryCount + 1) + '/' + (MAX_RETRY + 1) + ')');
-                            aggiornaStato('loading', '⏱️ Timeout - Riprovo (' + (retryCount + 1) + '/' + (MAX_RETRY + 1) + ')...');
-                            
-                            setTimeout(function() {
-                                caricaSchede();
-                            }, 2000);
-                        } else {
-                            console.log('Raggiunto limite retry (' + (MAX_RETRY + 1) + ' tentativi)');
-                            aggiornaStato('connected', '✅ Pronto (offline)');
-                            retryCount = 0; // Reset per prossimo caricamento manuale
-                        }
-                    } else {
-                        console.log('Errore di rete o altro:', error.message);
-                        aggiornaStato('disconnected', '❌ Errore connessione');
-                    }
-                    
-                    // In ogni caso, il form deve essere utilizzabile
-                    console.log('Form utilizzabile nonostante errore');
+                    console.error('Errore:', error);
+                    aggiornaStato('disconnected', '❌ Errore connessione');
+                    mostraMessaggio('error', 'Errore di connessione al server Google Sheets');
                 });
         }
 
@@ -1723,101 +1589,6 @@
                 }
             });
         }
-    </script>
-    
-    <!-- INIZIALIZZAZIONE IMMEDIATA (eseguita subito, non aspetta eventi) -->
-    <script>
-        // Questo script si esegue IMMEDIATAMENTE appena viene letto dal browser
-        (function() {
-            console.log('Script inizializzazione IMMEDIATA eseguito');
-            
-            // 🚨 RILEVA SE FILE È APERTO IN LOCALE
-            if (window.location.protocol === 'file:') {
-                console.error('⚠️ FILE LOCALE RILEVATO!');
-                console.error('Protocollo: file:// - Le fetch verso Google Apps Script sono BLOCCATE da iOS');
-                console.error('SOLUZIONE: Carica il file su Google Drive o GitHub Pages');
-                
-                // Mostra avviso visibile
-                const statusDot = document.getElementById('statusDot');
-                const statusText = document.getElementById('statusText');
-                if (statusDot && statusText) {
-                    statusDot.className = 'status-dot disconnected';
-                    statusText.innerHTML = '⚠️ <strong>FILE LOCALE</strong> - Carica su web per salvare dati';
-                    statusText.style.color = '#ff0000';
-                    statusText.style.fontSize = '13px';
-                }
-                
-                // Mostra alert su mobile
-                if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
-                    setTimeout(function() {
-                        alert('⚠️ ATTENZIONE\n\nStai aprendo il file in LOCALE (da WhatsApp/Files).\n\nSu iPhone, i file locali NON possono salvare su Google Sheets per restrizioni di sicurezza iOS.\n\nSOLUZIONE:\n1. Carica il file su Google Drive\n2. Apri da Drive con Safari\n\nOppure contatta l\'amministratore.');
-                    }, 1000);
-                }
-                
-                // Non tentare fetch se file locale
-                return;
-            }
-            
-            // Imposta data di oggi appena possibile
-            try {
-                const oggi = new Date().toISOString().split('T')[0];
-                const dataField = document.getElementById('dataCompilazione');
-                if (dataField) {
-                    dataField.value = oggi;
-                    console.log('Data impostata immediatamente:', oggi);
-                }
-            } catch (e) {
-                console.error('Errore imposta data immediata:', e);
-            }
-            
-            // Cambia stato da "Pronto per l'uso" a "Caricamento" se JavaScript funziona
-            try {
-                const statusDot = document.getElementById('statusDot');
-                const statusText = document.getElementById('statusText');
-                if (statusDot && statusText) {
-                    statusDot.className = 'status-dot loading';
-                    statusText.textContent = 'Caricamento schede...';
-                    console.log('Stato cambiato a Caricamento');
-                }
-            } catch (e) {
-                console.error('Errore cambio stato:', e);
-            }
-            
-            // Avvia caricamento schede dopo 100ms
-            setTimeout(function() {
-                console.log('Tentativo caricamento schede dopo 100ms');
-                if (typeof caricaSchede === 'function') {
-                    try {
-                        caricaSchede();
-                        console.log('caricaSchede() chiamata con successo');
-                    } catch (e) {
-                        console.error('Errore in caricaSchede():', e);
-                        // Se fallisce, torna a "Pronto per l'uso"
-                        const statusDot = document.getElementById('statusDot');
-                        const statusText = document.getElementById('statusText');
-                        if (statusDot && statusText) {
-                            statusDot.className = 'status-dot connected';
-                            statusText.textContent = '✅ Pronto per l\'uso (offline)';
-                        }
-                    }
-                } else {
-                    console.warn('caricaSchede() non ancora definita');
-                }
-            }, 100);
-            
-            // Fallback definitivo: dopo 7 secondi forza stato OK
-            setTimeout(function() {
-                const statusText = document.getElementById('statusText');
-                if (statusText && (statusText.textContent.includes('Inizializzazione') || statusText.textContent.includes('Caricamento'))) {
-                    console.warn('FALLBACK DEFINITIVO: 7 secondi, forzo stato utilizzabile');
-                    const statusDot = document.getElementById('statusDot');
-                    if (statusDot) statusDot.className = 'status-dot connected';
-                    if (statusText) statusText.textContent = '✅ Pronto per l\'uso';
-                }
-            }, 7000);
-            
-            console.log('Script inizializzazione IMMEDIATA completato');
-        })();
     </script>
 </body>
 </html>
