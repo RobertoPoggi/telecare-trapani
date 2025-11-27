@@ -3,40 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scheda Assistito v3.4 - Distretto 50 Trapani</title>
+    <title>TeleCare H24 v3.4.3 - Distretto 50 Trapani</title>
     
-    <!-- Icona per iPhone/iPad - Torre di Ligny Trapani -->
+    <!-- Icona Torre di Ligny -->
     <link rel="apple-touch-icon" href="https://cdn1.genspark.ai/user-upload-image/5_generated/a65a552f-4932-467c-9204-3d2950f76226.jpeg">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://cdn1.genspark.ai/user-upload-image/5_generated/a65a552f-4932-467c-9204-3d2950f76226.jpeg">
-    <link rel="icon" type="image/png" href="https://cdn1.genspark.ai/user-upload-image/5_generated/a65a552f-4932-467c-9204-3d2950f76226.jpeg">
-    
-    <!-- Configurazione Web App per iPhone -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="TeleCare H24">
+    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
             min-height: 100vh;
         }
-
+        
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
         }
-
+        
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -44,7 +36,7 @@
             text-align: center;
             position: relative;
         }
-
+        
         .version-badge {
             position: absolute;
             top: 15px;
@@ -54,309 +46,343 @@
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
-            backdrop-filter: blur(10px);
         }
-
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .header p {
-            font-size: 16px;
-            opacity: 0.95;
-        }
-
-        .project-info {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            margin-top: 15px;
-            border-radius: 10px;
-            font-size: 13px;
-            text-align: left;
-        }
-
-        .status-bar {
+        
+        .header h1 { font-size: 28px; margin-bottom: 10px; }
+        
+        .nav-tabs {
             background: #f8f9fa;
-            padding: 15px 30px;
-            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            border-bottom: 3px solid #667eea;
+            overflow-x: auto;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            min-width: 140px;
+            padding: 18px 10px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 15px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .nav-tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .nav-tab:hover { background: #e9ecef; }
+        
+        .tab-content { display: none; padding: 30px; }
+        .tab-content.active { display: block; }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .stat-number {
+            font-size: 48px;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+        
+        /* Lista assistiti */
+        .assistiti-container {
+            margin-top: 20px;
+        }
+        
+        .filter-bar {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-bar select {
+            padding: 10px 15px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 15px;
+            min-width: 200px;
+            cursor: pointer;
+        }
+        
+        .filter-bar label {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .list-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .list-table thead {
+            background: #667eea;
+            color: white;
+        }
+        
+        .list-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .list-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .list-table tbody tr:hover {
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+        
+        .badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        /* Ricerca */
+        .search-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #667eea;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 18px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            outline: none;
+        }
+        
+        .search-results {
+            margin-top: 20px;
+            display: grid;
+            gap: 15px;
+        }
+        
+        .assistito-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
         }
-
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            font-weight: 600;
+        
+        .assistito-card:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        .status-dot.connected {
-            background: #28a745;
-        }
-
-        .status-dot.disconnected {
-            background: #dc3545;
-        }
-
-        .status-dot.loading {
-            background: #ffc107;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .stats-bar {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 20px 30px;
-            border-bottom: 2px solid #e0e0e0;
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            text-align: center;
-            min-width: 150px;
-        }
-
-        .stat-number {
-            font-size: 32px;
-            font-weight: bold;
+        
+        .assistito-info { flex: 1; }
+        
+        .assistito-nome {
+            font-size: 20px;
+            font-weight: 700;
             color: #667eea;
-            display: block;
+            margin-bottom: 5px;
         }
-
-        .stat-label {
-            font-size: 13px;
-            color: #666;
+        
+        /* Tabella Comuni */
+        .comuni-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .comuni-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .comuni-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .comuni-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .comuni-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .progress-mini {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
             margin-top: 5px;
         }
-
-        .action-bar {
-            padding: 20px 30px;
-            background: #f8f9fa;
-            border-bottom: 2px solid #e0e0e0;
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
+        
+        .progress-mini-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
         }
-
-        .action-btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
+        
+        .assistito-dettagli {
             font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
+            color: #666;
+            margin-top: 8px;
+        }
+        
+        .assistito-badges {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .action-btn.primary {
-            background: #28a745;
-            color: white;
-        }
-
-        .action-btn.primary:hover {
-            background: #218838;
-            transform: translateY(-2px);
-        }
-
-        .action-btn.secondary {
-            background: #17a2b8;
-            color: white;
-        }
-
-        .action-btn.secondary:hover {
-            background: #138496;
-            transform: translateY(-2px);
-        }
-
-        .action-btn.warning {
-            background: #ffc107;
-            color: #000;
-        }
-
-        .action-btn.warning:hover {
-            background: #e0a800;
-            transform: translateY(-2px);
-        }
-
-        .form-content {
-            padding: 30px;
-        }
-
-        .section {
-            margin-bottom: 40px;
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .section-title {
-            font-size: 22px;
-            color: #667eea;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
             gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
         }
-
+        
+        /* Form styling */
+        .form-section {
+            margin-bottom: 35px;
+        }
+        
+        .form-section-title {
+            font-size: 20px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+        
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
-            margin-bottom: 20px;
         }
-
+        
         .form-group {
             display: flex;
             flex-direction: column;
         }
-
+        
         .form-group.full-width {
             grid-column: 1 / -1;
         }
-
+        
         label {
             font-weight: 600;
             color: #333;
             margin-bottom: 8px;
             font-size: 14px;
         }
-
-        label .required {
-            color: #dc3545;
-            margin-left: 3px;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"],
-        input[type="date"],
-        input[type="number"],
-        textarea,
-        select {
+        
+        input, textarea, select {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 15px;
-            transition: all 0.3s ease;
             font-family: inherit;
+            transition: all 0.3s;
         }
-
-        input:focus,
-        textarea:focus,
-        select:focus {
+        
+        input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
-
-        select {
-            cursor: pointer;
-            background: white;
-        }
-
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        /* Stile per data di nascita con campi separati */
+        
+        textarea { min-height: 100px; resize: vertical; }
+        
         .date-input-group {
             display: flex;
             gap: 10px;
             align-items: center;
         }
-
+        
         .date-input-group input {
             text-align: center;
-            font-size: 16px;
             font-weight: 600;
         }
-
-        .date-input-group input[name="giorno"],
-        .date-input-group input[name="mese"] {
-            width: 70px;
-            min-width: 70px;
-        }
-
-        .date-input-group input[name="anno"] {
-            width: 90px;
-            min-width: 90px;
-        }
-
-        .date-input-group span {
-            font-size: 18px;
-            font-weight: bold;
-            color: #999;
-        }
-
+        
         .age-display {
             padding: 12px 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-radius: 8px;
             font-weight: 600;
-            font-size: 16px;
             text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            min-width: 150px;
         }
-
+        
         .age-display.empty {
             background: #e9ecef;
             color: #999;
         }
-
-        .caregiver-card {
-            background: #f8f9fa;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .caregiver-header {
-            font-size: 18px;
-            font-weight: 600;
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-
+        
         .button-group {
             display: flex;
             gap: 15px;
@@ -364,80 +390,63 @@
             margin-top: 30px;
             flex-wrap: wrap;
         }
-
-        button.btn-primary {
+        
+        .btn {
             padding: 15px 40px;
             font-size: 16px;
             font-weight: 600;
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
-
-        button.btn-primary:hover {
+        
+        .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
-
-        button.btn-secondary {
-            padding: 15px 40px;
-            font-size: 16px;
-            font-weight: 600;
-            border: 2px solid #667eea;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        
+        .btn-secondary {
             background: white;
             color: #667eea;
+            border: 2px solid #667eea;
         }
-
-        button.btn-secondary:hover {
+        
+        .btn-secondary:hover {
             background: #667eea;
             color: white;
         }
-
+        
         .message {
             padding: 15px 20px;
             border-radius: 8px;
             margin-bottom: 20px;
             display: none;
-            animation: slideDown 0.5s ease;
-            font-weight: 500;
         }
-
+        
         .message.success {
             background: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
-
+        
         .message.error {
             background: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-
+        
         .message.info {
             background: #d1ecf1;
             color: #0c5460;
             border: 1px solid #bee5eb;
         }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        
         .loading-overlay {
             display: none;
             position: fixed;
@@ -450,15 +459,14 @@
             justify-content: center;
             align-items: center;
         }
-
+        
         .loading-content {
             background: white;
             padding: 40px;
             border-radius: 15px;
             text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
-
+        
         .spinner {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #667eea;
@@ -468,207 +476,231 @@
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
         }
-
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-        }
-
-        .modal-content {
-            background: white;
-            margin: 5% auto;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .close-btn {
-            font-size: 30px;
-            font-weight: bold;
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
             color: #999;
-            cursor: pointer;
-            line-height: 1;
-            padding: 0 10px;
         }
-
-        .close-btn:hover {
-            color: #333;
-        }
-
-        .schede-list {
-            display: grid;
-            gap: 15px;
-        }
-
-        .scheda-item {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            border: 2px solid #e0e0e0;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .scheda-item:hover {
-            border-color: #667eea;
-            background: #f0f3ff;
-            transform: translateX(5px);
-        }
-
-        .filter-bar {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
+        
+        .empty-state-icon {
+            font-size: 64px;
             margin-bottom: 20px;
-            border: 2px solid #e0e0e0;
         }
-
-        .filter-bar select {
-            padding: 10px;
-            border-radius: 8px;
-            border: 2px solid #667eea;
-            font-size: 14px;
-            min-width: 200px;
-        }
-
+        
         @media (max-width: 768px) {
-            .form-content {
-                padding: 20px;
-            }
-
-            .header h1 {
-                font-size: 22px;
-            }
-
-            .version-badge {
-                position: static;
-                margin-bottom: 10px;
-                display: inline-block;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .button-group {
-                flex-direction: column;
-            }
-
-            button {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .action-bar {
-                flex-direction: column;
-            }
-
-            .status-bar {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .stats-bar {
-                flex-direction: column;
-            }
-
-            .stat-card {
-                width: 100%;
-            }
-
-            .date-input-group {
-                flex-direction: column;
-            }
-
-            .date-input-group input {
-                width: 100% !important;
-            }
+            .container { border-radius: 0; }
+            .form-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .nav-tab { min-width: 110px; font-size: 13px; padding: 15px 8px; }
+            .filter-bar { flex-direction: column; }
+            .filter-bar select { width: 100%; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="version-badge">📋 v3.4</div>
-            <h1>📋 SCHEDA RACCOLTA DATI ASSISTITO</h1>
-            <p>Comune di Trapani - Distretto 50</p>
-            <p style="font-size: 14px; opacity: 0.9; margin-top: 5px;">
-                9 Comuni: Trapani • Erice • Valderice • Paceco • Misiliscemi • Custonaci • San Vito Lo Capo • Favignana • Buseto Palizzolo
-            </p>
-            <div class="project-info">
-                <strong>📅 Progetto PNRR TeleCare H24</strong><br>
-                Obiettivo: 100 assistiti | Periodo: Nov 2025 - Mar 2026
+            <div class="version-badge">v3.4.3</div>
+            <h1>🏥 TeleCare H24 - Distretto 50 Trapani</h1>
+            <p>Progetto PNRR | 100 Assistiti | Nov 2025 - Mar 2026</p>
+        </div>
+        
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+            <button class="nav-tab" onclick="switchTab('installati')">✅ Installati</button>
+            <button class="nav-tab" onclick="switchTab('pianificati')">📅 Pianificati</button>
+            <button class="nav-tab" onclick="switchTab('ricerca')">🔍 Ricerca</button>
+            <button class="nav-tab" onclick="switchTab('nuova')">➕ Nuova</button>
+        </div>
+        
+        <!-- TAB DASHBOARD -->
+        <div id="tab-dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number" id="stat-totale">0</span>
+                    <span class="stat-label">Totale Assistiti</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="stat-installati">0</span>
+                    <span class="stat-label">Dispositivi Installati</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="stat-pianificati">0</span>
+                    <span class="stat-label">Installazioni Pianificate</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="stat-comuni">0</span>
+                    <span class="stat-label">Comuni Coperti</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px;">
+                <h2 style="color: #667eea; margin-bottom: 20px;">📈 Riepilogo Progetto</h2>
+                <div style="background: #f8f9fa; padding: 30px; border-radius: 15px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                        <div>
+                            <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Obiettivo Totale</div>
+                            <div style="font-size: 32px; font-weight: bold; color: #667eea;">100</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Scadenza PNRR</div>
+                            <div style="font-size: 24px; font-weight: bold; color: #dc3545;">31 Marzo 2026</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Progresso</div>
+                            <div style="font-size: 32px; font-weight: bold; color: #28a745;" id="dashboard-progress">0%</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Da Completare</div>
+                            <div style="font-size: 32px; font-weight: bold; color: #ffc107;" id="dashboard-remaining">100</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px; background: white; padding: 20px; border-radius: 10px;">
+                        <div style="font-size: 14px; color: #666; margin-bottom: 10px;">Avanzamento Installazioni</div>
+                        <div style="background: #e9ecef; height: 30px; border-radius: 15px; overflow: hidden;">
+                            <div id="progress-bar" style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); height: 100%; width: 0%; transition: width 0.5s;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- PANNELLO CONFIGURAZIONE OBIETTIVI -->
+                    <div style="margin-top: 30px; background: linear-gradient(135deg, #fff3cd 0%, #ffc107 100%); padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 style="margin: 0; color: #856404;">⚙️ Configurazione Obiettivi per Comune</h3>
+                            <button onclick="toggleConfigPanel()" style="background: white; border: 2px solid #856404; color: #856404; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+                                <span id="config-toggle-icon">▼</span> Mostra/Nascondi
+                            </button>
+                        </div>
+                        <div id="config-obiettivi-panel" style="display: none; background: white; padding: 20px; border-radius: 8px; margin-top: 15px;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;" id="config-obiettivi-grid">
+                                <!-- Popolato dinamicamente -->
+                            </div>
+                            <div style="margin-top: 20px; text-align: center;">
+                                <button onclick="salvaObiettivi()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: all 0.3s;">
+                                    💾 Salva Obiettivi
+                                </button>
+                                <button onclick="resetObiettivi()" style="background: #dc3545; color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; margin-left: 10px; transition: all 0.3s;">
+                                    🔄 Ripristina Default
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- STATISTICA PER COMUNE -->
+            <div style="margin-top: 40px;">
+                <h2 style="color: #667eea; margin-bottom: 20px;">🏘️ Distribuzione per Comune</h2>
+                <div style="background: #f8f9fa; padding: 30px; border-radius: 15px;">
+                    <table class="comuni-table">
+                        <thead>
+                            <tr>
+                                <th>Comune</th>
+                                <th style="text-align: center;">Assistiti Attuali</th>
+                                <th style="text-align: center;">Installati</th>
+                                <th style="text-align: center;">Obiettivo</th>
+                                <th style="text-align: center;">% Completamento</th>
+                                <th>Avanzamento</th>
+                                <th style="text-align: center;">Mancanti</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comuni-table-body">
+                            <!-- Popolato dinamicamente da JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button onclick="mostraTutteLeSchede()" class="btn btn-primary" style="font-size: 18px;">
+                    📋 Visualizza Tutte le Schede
+                </button>
             </div>
         </div>
-
-        <div class="status-bar">
-            <div class="status-indicator">
-                <div class="status-dot disconnected" id="statusDot"></div>
-                <span id="statusText">Inizializzazione...</span>
+        
+        <!-- TAB INSTALLATI -->
+        <div id="tab-installati" class="tab-content">
+            <h2 style="color: #667eea; margin-bottom: 20px;">✅ Dispositivi Installati (<span id="count-installati">0</span>)</h2>
+            
+            <div class="filter-bar">
+                <label>Filtra per Comune:</label>
+                <select id="filter-comune-installati" onchange="filtraInstallati()">
+                    <option value="">🌍 Tutti i Comuni</option>
+                    <option value="Trapani">Trapani</option>
+                    <option value="Erice">Erice</option>
+                    <option value="Valderice">Valderice</option>
+                    <option value="Paceco">Paceco</option>
+                    <option value="Misiliscemi">Misiliscemi</option>
+                    <option value="Custonaci">Custonaci</option>
+                    <option value="San Vito Lo Capo">San Vito Lo Capo</option>
+                    <option value="Favignana">Favignana</option>
+                    <option value="Buseto Palizzolo">Buseto Palizzolo</option>
+                </select>
             </div>
-            <div class="status-indicator">
-                📊 Schede totali: <strong id="totalSchede">-</strong>
-            </div>
+            
+            <div id="lista-installati-full" class="assistiti-container"></div>
         </div>
-
-        <div class="stats-bar" id="statsBar" style="display: none;">
-            <div class="stat-card">
-                <span class="stat-number" id="statTotale">0</span>
-                <span class="stat-label">Totale Assistiti</span>
+        
+        <!-- TAB PIANIFICATI -->
+        <div id="tab-pianificati" class="tab-content">
+            <h2 style="color: #667eea; margin-bottom: 20px;">📅 Installazioni Pianificate (<span id="count-pianificati">0</span>)</h2>
+            
+            <div class="filter-bar">
+                <label>Filtra per Mese:</label>
+                <select id="filter-mese-pianificati" onchange="filtraPianificati()">
+                    <option value="">📅 Tutti i Mesi</option>
+                    <option value="Novembre 2025">Novembre 2025</option>
+                    <option value="Dicembre 2025">Dicembre 2025</option>
+                    <option value="Gennaio 2026">Gennaio 2026</option>
+                    <option value="Febbraio 2026">Febbraio 2026</option>
+                    <option value="Marzo 2026">Marzo 2026</option>
+                </select>
+                
+                <label>Filtra per Comune:</label>
+                <select id="filter-comune-pianificati" onchange="filtraPianificati()">
+                    <option value="">🌍 Tutti i Comuni</option>
+                    <option value="Trapani">Trapani</option>
+                    <option value="Erice">Erice</option>
+                    <option value="Valderice">Valderice</option>
+                    <option value="Paceco">Paceco</option>
+                    <option value="Misiliscemi">Misiliscemi</option>
+                    <option value="Custonaci">Custonaci</option>
+                    <option value="San Vito Lo Capo">San Vito Lo Capo</option>
+                    <option value="Favignana">Favignana</option>
+                    <option value="Buseto Palizzolo">Buseto Palizzolo</option>
+                </select>
             </div>
-            <div class="stat-card">
-                <span class="stat-number" id="statComune">0</span>
-                <span class="stat-label">Comuni Coperti</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" id="statPiuComune">-</span>
-                <span class="stat-label">Comune con Più Assistiti</span>
-            </div>
+            
+            <div id="lista-pianificati-full" class="assistiti-container"></div>
         </div>
-
-        <div class="action-bar">
-            <button class="action-btn secondary" onclick="caricaSchede()">
-                🔄 Ricarica Schede
-            </button>
-            <button class="action-btn secondary" onclick="mostraListaSchede()">
-                📋 Visualizza Tutte le Schede
-            </button>
-            <button class="action-btn secondary" onclick="mostraStatistiche()">
-                📊 Statistiche per Comune
-            </button>
+        
+        <!-- TAB RICERCA -->
+        <div id="tab-ricerca" class="tab-content">
+            <div class="search-box">
+                <h2 style="margin-bottom: 15px; color: #667eea;">🔍 Cerca Assistito</h2>
+                <input type="text" 
+                       class="search-input" 
+                       id="searchInput" 
+                       placeholder="Digita nome, cognome, numero scheda o comune..."
+                       onkeyup="cercaAssistito()">
+            </div>
+            <div id="search-results" class="search-results"></div>
         </div>
-
-        <div class="form-content">
-            <!-- Messaggio -->
+        
+        <!-- TAB NUOVA SCHEDA -->
+        <div id="tab-nuova" class="tab-content">
             <div class="message" id="messageBox"></div>
-
+            
             <form id="assistitoForm">
                 <!-- DATI ASSISTITO -->
                 <div class="section">
-                    <h2 class="section-title">👤 Dati Assistito</h2>
+                    <h2 class="section-title" style="margin-top: 40px; padding-top: 25px; border-top: 2px solid #e0e0e0;">👤 Dati Assistito</h2>
                     
                     <div class="form-grid">
                         <div class="form-group">
@@ -753,7 +785,7 @@
 
                 <!-- CAREGIVER -->
                 <div class="section">
-                    <h2 class="section-title">👥 Caregiver</h2>
+                    <h2 class="section-title" style="margin-top: 40px; padding-top: 25px; border-top: 2px solid #e0e0e0;">👥 Caregiver</h2>
 
                     <div class="caregiver-card">
                         <div class="caregiver-header">Caregiver B</div>
@@ -865,7 +897,7 @@
 
                 <!-- ALTRI DATI ASSISTITO -->
                 <div class="section">
-                    <h2 class="section-title">📝 Altri Dati Assistito</h2>
+                    <h2 class="section-title" style="margin-top: 40px; padding-top: 25px; border-top: 2px solid #e0e0e0;">📝 Altri Dati Assistito</h2>
                     
                     <div class="form-grid">
                         <div class="form-group">
@@ -950,11 +982,11 @@
 
                 <!-- AUSILI ED ECG -->
                 <div class="section">
-                    <h2 class="section-title">🔧 Ausili ed ECG</h2>
+                    <h2 class="section-title" style="margin-top: 40px; padding-top: 25px; border-top: 2px solid #e0e0e0;">🔧 Ausili ed ECG</h2>
                     
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="poltrone">Poltrone con Sensori</label>
+                            <label for="poltrone">Poltrone antidecubito</label>
                             <select id="poltrone" name="poltrone">
                                 <option value="">-</option>
                                 <option value="S">✅ S</option>
@@ -989,7 +1021,7 @@
 
                 <!-- ALTRI CONTATTI -->
                 <div class="section">
-                    <h2 class="section-title">📞 ALTRI CONTATTI</h2>
+                    <h2 class="section-title" style="margin-top: 40px; padding-top: 25px; border-top: 2px solid #e0e0e0;">📞 ALTRI CONTATTI</h2>
                     
                     <div class="form-grid">
                         <div class="form-group">
@@ -1036,9 +1068,68 @@
                     </div>
                 </div>
 
+                <!-- PIANIFICAZIONE INSTALLAZIONE -->
+                <div class="section">
+                    <h2 class="section-title" style="margin-top: 40px; padding-top: 25px; border-top: 2px solid #e0e0e0;">📅 Pianificazione Installazione</h2>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="meseInstallazionePrevisto">Mese Install. Dispositivo</label>
+                            <select id="meseInstallazionePrevisto" name="meseInstallazionePrevisto">
+                                <option value="">-- Seleziona --</option>
+                                <option value="Novembre 2025">Nov 2025</option>
+                                <option value="Dicembre 2025">Dic 2025</option>
+                                <option value="Gennaio 2026">Gen 2026</option>
+                                <option value="Febbraio 2026">Feb 2026</option>
+                                <option value="Marzo 2026">Mar 2026</option>
+                                <option value="Non pianificato">Non pianificato</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="meseInstallazionePoltrona">Mese Install. Poltrona</label>
+                            <select id="meseInstallazionePoltrona" name="meseInstallazionePoltrona">
+                                <option value="">-- Seleziona --</option>
+                                <option value="Novembre 2025">Nov 2025</option>
+                                <option value="Dicembre 2025">Dic 2025</option>
+                                <option value="Gennaio 2026">Gen 2026</option>
+                                <option value="Febbraio 2026">Feb 2026</option>
+                                <option value="Marzo 2026">Mar 2026</option>
+                                <option value="Non pianificato">Non pianificato</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="meseInstallazioneSensoreLuce">Mese Install. Sensore Luce</label>
+                            <select id="meseInstallazioneSensoreLuce" name="meseInstallazioneSensoreLuce">
+                                <option value="">-- Seleziona --</option>
+                                <option value="Novembre 2025">Nov 2025</option>
+                                <option value="Dicembre 2025">Dic 2025</option>
+                                <option value="Gennaio 2026">Gen 2026</option>
+                                <option value="Febbraio 2026">Feb 2026</option>
+                                <option value="Marzo 2026">Mar 2026</option>
+                                <option value="Non pianificato">Non pianificato</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="meseInstallazioneSensoreEcg">Mese Install. Sensore ECG</label>
+                            <select id="meseInstallazioneSensoreEcg" name="meseInstallazioneSensoreEcg">
+                                <option value="">-- Seleziona --</option>
+                                <option value="Novembre 2025">Nov 2025</option>
+                                <option value="Dicembre 2025">Dic 2025</option>
+                                <option value="Gennaio 2026">Gen 2026</option>
+                                <option value="Febbraio 2026">Feb 2026</option>
+                                <option value="Marzo 2026">Mar 2026</option>
+                                <option value="Non pianificato">Non pianificato</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                
                 <!-- INSTALLAZIONE -->
                 <div class="section">
-                    <h2 class="section-title">⚙️ Installazione</h2>
+                    <h2 class="section-title" style="margin-top: 40px; padding-top: 25px; border-top: 2px solid #e0e0e0;">⚙️ Installazione</h2>
                     
                     <div class="form-grid">
                         <div class="form-group">
@@ -1070,6 +1161,14 @@
                             </select>
                         </div>
                     </div>
+                    
+                    <!-- VISUALIZZAZIONE SCELTE EFFETTUATE -->
+                    
+                    <div class="form-group full-width" style="margin-top: 15px;">
+                        <label for="notePianificazione">Note Pianificazione</label>
+                        <textarea id="notePianificazione" name="notePianificazione" placeholder="Eventuali note sulla pianificazione installazione..."></textarea>
+                    </div>
+                </div>
                 </div>
 
                 <div class="button-group">
@@ -1083,557 +1182,890 @@
             </form>
         </div>
     </div>
-
+    
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-content">
             <div class="spinner"></div>
-            <p id="loadingText">Caricamento in corso...</p>
+            <p id="loadingText">Caricamento...</p>
         </div>
     </div>
-
-    <!-- Modal Lista Schede -->
-    <div id="listaSchedeModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>📋 Schede su Google Sheets</h2>
-                <span class="close-btn" onclick="chiudiModal()">&times;</span>
-            </div>
-            
-            <div class="filter-bar">
-                <label for="filtroComune" style="margin-right: 10px;"><strong>Filtra per Comune:</strong></label>
-                <select id="filtroComune" onchange="filtraSchedePerComune()">
-                    <option value="">🌍 Tutti i Comuni</option>
-                    <option value="Trapani">Trapani (46)</option>
-                    <option value="Erice">Erice (19)</option>
-                    <option value="Valderice">Valderice (8)</option>
-                    <option value="Paceco">Paceco (8)</option>
-                    <option value="Misiliscemi">Misiliscemi (7)</option>
-                    <option value="Custonaci">Custonaci (4)</option>
-                    <option value="San Vito Lo Capo">San Vito Lo Capo (3)</option>
-                    <option value="Favignana">Favignana (3)</option>
-                    <option value="Buseto Palizzolo">Buseto Palizzolo (2)</option>
-                </select>
-            </div>
-            
-            <div id="listaSchedeContent" class="schede-list"></div>
-        </div>
-    </div>
-
-    <!-- Modal Statistiche -->
-    <div id="statisticheModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>📊 Statistiche per Comune - Distretto 50</h2>
-                <span class="close-btn" onclick="chiudiModalStatistiche()">&times;</span>
-            </div>
-            <div id="statisticheContent"></div>
-        </div>
-    </div>
-
+    
     <script>
-        // ============================================
-        // CONFIGURAZIONE HARDCODED
-        // INSERIRE QUI L'URL DEL GOOGLE APPS SCRIPT
-        // ============================================
-        const DEPLOY_URL = 'https://script.google.com/macros/s/AKfycbx5WTaDwT0xy61Y2pRGIhqWc3z92fXOzW1BnsBtn3aVtaXm-cDqWvATBE0B32YJ8FUTaA/exec';
-        
-        // Esempio:
-        // const DEPLOY_URL = 'https://script.google.com/macros/s/AKfycbxXXXXXXXXX/exec';
-        
-        // ============================================
+        // ========================================
+        // CONFIGURAZIONE
+        // ========================================
+        const DEPLOY_URL = 'https://script.google.com/macros/s/AKfycbz7aSklg7wU1blhOUmPoOgPNEP7NM5oZYddgkp5q8GfwqJmu-460gNA8tsltm3u11Gy2w/exec';
         
         let schedeCache = [];
-        let schedeFiltrate = [];
-
-        // Obiettivi ufficiali per comune dalla MdI 03/09/2025
-        const OBIETTIVI_COMUNI = {
-            'Trapani': 46,
-            'Erice': 19,
-            'Valderice': 8,
-            'Paceco': 8,
-            'Misiliscemi': 7,
-            'Custonaci': 4,
-            'San Vito Lo Capo': 3,
-            'Favignana': 3,
-            'Buseto Palizzolo': 2
-        };
-
-        // Inizializzazione al caricamento pagina
+        let installatiCache = [];
+        let pianificatiCache = [];
+        
+        // ========================================
+        // INIZIALIZZAZIONE
+        // ========================================
         window.addEventListener('DOMContentLoaded', function() {
-            verificaConfigurazione();
+            setupPianificazioneListeners();
             impostaDataOggi();
             caricaSchede();
             setupDateInputs();
         });
-
-        // Setup campi data di nascita con salto automatico
+        
+        // ========================================
+        // GESTIONE TAB
+        // ========================================
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'dashboard') {
+                aggiornaDashboard();
+            } else if (tabName === 'installati') {
+                mostraInstallati();
+            } else if (tabName === 'pianificati') {
+                mostraPianificati();
+            }
+        }
+        
+        // ========================================
+        // CARICAMENTO DATI
+        // ========================================
+        function caricaSchede() {
+            mostraLoading('Caricamento dati...');
+            
+            fetch(DEPLOY_URL)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('📊 Dati ricevuti:', data);
+                    console.log('📊 data.schede length:', data.schede ? data.schede.length : 0);
+                    if (data.success) {
+                        schedeCache = data.schede || [];
+                        
+                        // Pre-filtra le cache
+                        console.log('📊 schedeCache length:', schedeCache.length);
+                        installatiCache = schedeCache.filter(s => s.IMEI && s.IMEI.trim() !== '');
+                        console.log('📊 installatiCache length:', installatiCache.length);
+                        pianificatiCache = schedeCache.filter(s => 
+                            s.meseInstallazionePrevisto && 
+                            s.meseInstallazionePrevisto !== 'Non pianificato' &&
+                            s.meseInstallazionePrevisto !== '' &&
+                            (!s.IMEI || s.IMEI.trim() === '')
+                        );
+                        console.log('📊 pianificatiCache length:', pianificatiCache.length);
+                        
+                        aggiornaDashboard();
+                        nascondiLoading();
+                        mostraMessaggio('success', `✅ ${schedeCache.length} schede caricate`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Errore:', error);
+                    nascondiLoading();
+                    mostraMessaggio('error', '❌ Errore caricamento dati');
+                });
+        }
+        
+        // ========================================
+        // DASHBOARD
+        // ========================================
+        function aggiornaDashboard() {
+            if (schedeCache.length === 0) return;
+            
+            const installati = installatiCache.length;
+            const pianificati = pianificatiCache.length;
+            const comuni = new Set(schedeCache.map(s => s.comune).filter(c => c)).size;
+            const totale = schedeCache.length;
+            const progresso = Math.round((installati / 100) * 100);
+            const rimanenti = 100 - installati;
+            
+            document.getElementById('stat-totale').textContent = totale;
+            document.getElementById('stat-installati').textContent = installati;
+            document.getElementById('stat-pianificati').textContent = pianificati;
+            document.getElementById('stat-comuni').textContent = comuni;
+            document.getElementById('dashboard-progress').textContent = progresso + '%';
+            document.getElementById('dashboard-remaining').textContent = rimanenti;
+            document.getElementById('progress-bar').style.width = progresso + '%';
+            
+            // Aggiorna tabella comuni
+            aggiornaTabellaComuni();
+        }
+        
+        // ========================================
+        // TABELLA DISTRIBUZIONE PER COMUNE
+        // ========================================
+        function aggiornaTabellaComuni() {
+            // Carica obiettivi da localStorage o usa default
+            const defaultObiettivi = {
+                'Trapani': 46,
+                'Erice': 19,
+                'Valderice': 8,
+                'Paceco': 8,
+                'Misiliscemi': 7,
+                'Custonaci': 4,
+                'San Vito Lo Capo': 3,
+                'Favignana': 3,
+                'Buseto Palizzolo': 2
+            };
+            
+            let OBIETTIVI_COMUNI = defaultObiettivi;
+            try {
+                const saved = localStorage.getItem('obiettivi_comuni');
+                if (saved) {
+                    OBIETTIVI_COMUNI = JSON.parse(saved);
+                }
+            } catch(e) {
+                console.log('Usando obiettivi default');
+            }
+            
+            const COMUNI_DISTRETTO = [
+                'Trapani', 'Erice', 'Valderice', 'Paceco', 'Misiliscemi',
+                'Custonaci', 'San Vito Lo Capo', 'Favignana', 'Buseto Palizzolo'
+            ];
+            
+            // Conta assistiti e installati per comune
+            const conteggioComuni = {};
+            const installatiComuni = {};
+            COMUNI_DISTRETTO.forEach(comune => {
+                conteggioComuni[comune] = 0;
+                installatiComuni[comune] = 0;
+            });
+            
+            schedeCache.forEach(scheda => {
+                if (scheda.comune && COMUNI_DISTRETTO.includes(scheda.comune)) {
+                    conteggioComuni[scheda.comune]++;
+                    // Conta installati: se ha IMEI o Seriale dispositivo, è installato
+                    const haImei = scheda.IMEI && scheda.IMEI.trim() !== '' && scheda.IMEI !== 'Non specificato';
+                    const haSeriale = scheda.serialeDispositivo && scheda.serialeDispositivo.trim() !== '' && scheda.serialeDispositivo !== 'Non specificato';
+                    if (haImei || haSeriale) {
+                        installatiComuni[scheda.comune]++;
+                    }
+                }
+            });
+            
+            // Ordina comuni per obiettivo (decrescente)
+            const comuniOrdinati = COMUNI_DISTRETTO.sort((a, b) => OBIETTIVI_COMUNI[b] - OBIETTIVI_COMUNI[a]);
+            
+            // Genera HTML tabella
+            let html = '';
+            comuniOrdinati.forEach(comune => {
+                const count = conteggioComuni[comune] || 0;
+                const obiettivo = OBIETTIVI_COMUNI[comune];
+                const percentuale = obiettivo > 0 ? Math.round((count / obiettivo) * 100) : 0;
+                const mancanti = Math.max(0, obiettivo - count);
+                
+                let coloreBarra = '#667eea';
+                let bgColor = '';
+                if (percentuale >= 100) {
+                    coloreBarra = '#28a745';
+                    bgColor = 'background: #d4edda;';
+                } else if (percentuale >= 75) {
+                    coloreBarra = '#ffc107';
+                    bgColor = 'background: #fff3cd;';
+                } else if (percentuale >= 50) {
+                    coloreBarra = '#fd7e14';
+                } else if (percentuale > 0) {
+                    coloreBarra = '#dc3545';
+                }
+                
+                const installati = installatiComuni[comune] || 0;
+                
+                html += `
+                    <tr style="${bgColor}">
+                        <td><strong>${comune}</strong></td>
+                        <td style="text-align: center;"><strong style="font-size: 16px; color: #667eea;">${count}</strong></td>
+                        <td style="text-align: center;"><strong style="font-size: 18px; color: #28a745;">${installati}</strong></td>
+                        <td style="text-align: center;"><strong style="color: #764ba2;">${obiettivo}</strong></td>
+                        <td style="text-align: center;"><strong style="color: ${coloreBarra};">${percentuale}%</strong></td>
+                        <td>
+                            <div class="progress-mini">
+                                <div class="progress-mini-fill" style="width: ${Math.min(percentuale, 100)}%; background: ${coloreBarra};"></div>
+                            </div>
+                        </td>
+                        <td style="text-align: center;"><span style="color: ${mancanti > 0 ? '#dc3545' : '#28a745'};">${mancanti}</span></td>
+                    </tr>
+                `;
+            });
+            
+            // Calcola totali
+            let totalAssistiti = 0;
+            let totalInstallati = 0;
+            let totalObiettivo = 0;
+            let totalMancanti = 0;
+            
+            comuniOrdinati.forEach(comune => {
+                totalAssistiti += conteggioComuni[comune] || 0;
+                totalInstallati += installatiComuni[comune] || 0;
+                totalObiettivo += OBIETTIVI_COMUNI[comune] || 0;
+                totalMancanti += Math.max(0, OBIETTIVI_COMUNI[comune] - conteggioComuni[comune]);
+            });
+            
+            const totalPercentuale = totalObiettivo > 0 ? Math.round((totalAssistiti / totalObiettivo) * 100) : 0;
+            
+            // Aggiungi riga totali
+            html += `
+                <tr style="background: #e9ecef; font-weight: bold; border-top: 3px solid #667eea;">
+                    <td><strong>📊 TOTALE</strong></td>
+                    <td style="text-align: center;"><strong style="font-size: 18px; color: #667eea;">${totalAssistiti}</strong></td>
+                    <td style="text-align: center;"><strong style="font-size: 18px; color: #28a745;">${totalInstallati}</strong></td>
+                    <td style="text-align: center;"><strong style="color: #764ba2;">${totalObiettivo}</strong></td>
+                    <td style="text-align: center;"><strong style="color: ${totalPercentuale >= 100 ? '#28a745' : totalPercentuale >= 75 ? '#ffc107' : '#dc3545'};">${totalPercentuale}%</strong></td>
+                    <td>
+                        <div class="progress-mini">
+                            <div class="progress-mini-fill" style="width: ${Math.min(totalPercentuale, 100)}%; background: ${totalPercentuale >= 100 ? '#28a745' : totalPercentuale >= 75 ? '#ffc107' : '#dc3545'};"></div>
+                        </div>
+                    </td>
+                    <td style="text-align: center;"><strong style="color: ${totalMancanti > 0 ? '#dc3545' : '#28a745'};">${totalMancanti}</strong></td>
+                </tr>
+            `;
+            
+            document.getElementById('comuni-table-body').innerHTML = html;
+        }
+        
+        // ========================================
+        // TAB INSTALLATI
+        // ========================================
+        function mostraInstallati() {
+            filtraInstallati();
+        }
+        
+        // Formatta data mese in formato leggibile
+        function formatMeseInstallazione(dataString) {
+            if (!dataString || dataString === 'Non specificato' || dataString === 'Non pianificato') {
+                return 'Non specificato';
+            }
+            
+            // ✅ Se è già nel formato "Mese Anno", restituiscilo direttamente
+            if (typeof dataString === 'string' && /^[A-Za-z]+ \d{4}$/.test(dataString)) {
+                return dataString;
+            }
+            
+            try {
+                const data = new Date(dataString);
+                
+                // Controlla se la data è valida
+                if (isNaN(data.getTime())) {
+                    return 'Non specificato';
+                }
+                
+                const mesi = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
+                              'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+                
+                return `${mesi[data.getMonth()]} ${data.getFullYear()}`;
+            } catch(e) {
+                return 'Non specificato';
+            }
+        }
+        
+        function filtraInstallati() {
+            const filtroComune = document.getElementById('filter-comune-installati').value;
+            
+            let lista = installatiCache;
+            if (filtroComune) {
+                lista = installatiCache.filter(s => s.comune === filtroComune);
+            }
+            
+            document.getElementById('count-installati').textContent = lista.length;
+            
+            if (lista.length === 0) {
+                document.getElementById('lista-installati-full').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📦</div>
+                        <p>Nessun dispositivo installato${filtroComune ? ' per ' + filtroComune : ''}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '<table class="list-table"><thead><tr>';
+            html += '<th>Scheda</th><th>Nome Completo</th><th>Comune</th><th>Seriale (IMEI)</th><th>Mese Installazione</th><th>Stato</th>';
+            html += '</tr></thead><tbody>';
+            
+            lista.forEach(s => {
+                html += `<tr onclick='mostraDettaglioAssistito(${JSON.stringify(s).replace(/'/g, "&apos;")})'>
+                    <td><strong>${s.numeroScheda || '-'}</strong></td>
+                    <td>${s.nome || ''} ${s.cognome || ''}</td>
+                    <td>📍 ${s.comune || ''}</td>
+                    <td><code>${s.IMEI || "-"}</code></td>
+                    <td>${formatMeseInstallazione(s.meseInstallazionePrevisto)}</td>
+                    <td><span class="badge badge-success">✅ Installato</span></td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            document.getElementById('lista-installati-full').innerHTML = html;
+        }
+        
+        // ========================================
+        // TAB PIANIFICATI
+        // ========================================
+        function mostraPianificati() {
+            filtraPianificati();
+        }
+        
+        function filtraPianificati() {
+            const filtroMese = document.getElementById('filter-mese-pianificati').value;
+            const filtroComune = document.getElementById('filter-comune-pianificati').value;
+            
+            let lista = pianificatiCache;
+            
+            if (filtroMese) {
+                lista = lista.filter(s => s.meseInstallazionePrevisto === filtroMese);
+            }
+            
+            if (filtroComune) {
+                lista = lista.filter(s => s.comune === filtroComune);
+            }
+            
+            document.getElementById('count-pianificati').textContent = lista.length;
+            
+            if (lista.length === 0) {
+                document.getElementById('lista-pianificati-full').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📅</div>
+                        <p>Nessuna installazione pianificata${filtroMese ? ' per ' + filtroMese : ''}${filtroComune ? ' a ' + filtroComune : ''}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '<table class="list-table"><thead><tr>';
+            html += '<th>Scheda</th><th>Nome Completo</th><th>Comune</th><th>Mese Previsto</th><th>Note</th><th>Stato</th>';
+            html += '</tr></thead><tbody>';
+            
+            lista.forEach(s => {
+                html += `<tr onclick='mostraDettaglioAssistito(${JSON.stringify(s).replace(/'/g, "&apos;")})'>
+                    <td><strong>${s.numeroScheda || '-'}</strong></td>
+                    <td>${s.nome || ''} ${s.cognome || ''}</td>
+                    <td>📍 ${s.comune || ''}</td>
+                    <td>📅 ${formatMeseInstallazione(s.meseInstallazionePrevisto)}</td>
+                    <td>${s.notePianificazione || '-'}</td>
+                    <td><span class="badge badge-info">📅 Pianificato</span></td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            document.getElementById('lista-pianificati-full').innerHTML = html;
+        }
+        
+        // ========================================
+        // RICERCA ASSISTITO
+        // ========================================
+        function mostraTutteLeSchede() {
+            // Switch al tab Ricerca e mostra tutte le schede
+            switchTab('ricerca');
+            
+            // Svuota campo ricerca per mostrare tutte
+            document.getElementById('searchInput').value = '';
+            
+            // Renderizza tutte le schede
+            const resultsDiv = document.getElementById('search-results');
+            
+            if (schedeCache.length === 0) {
+                resultsDiv.innerHTML = '<p style="color:#999;text-align:center;padding:20px">Nessuna scheda disponibile</p>';
+                return;
+            }
+            
+            let html = '<table class="list-table"><thead><tr>';
+            html += '<th>Scheda</th><th>Nome Completo</th><th>Comune</th><th>Data Nascita</th><th>Età</th><th>Cellulare</th><th>Stato</th>';
+            html += '</tr></thead><tbody>';
+            
+            schedeCache.forEach(s => {
+                const installato = s.IMEI && s.IMEI.trim() !== '';
+                const pianificato = s.meseInstallazionePrevisto && s.meseInstallazionePrevisto !== 'Non pianificato' && s.meseInstallazionePrevisto !== '';
+                
+                let stato = '⚠️ Non pianificato';
+                let badgeClass = 'badge-warning';
+                if (installato) {
+                    stato = '✅ Installato';
+                    badgeClass = 'badge-success';
+                } else if (pianificato) {
+                    stato = '📅 Pianificato';
+                    badgeClass = 'badge-info';
+                }
+                
+                let eta = '-';
+                if (s.dataNascita) {
+                    const nascita = new Date(s.dataNascita);
+                    const oggi = new Date();
+                    let calcoloEta = oggi.getFullYear() - nascita.getFullYear();
+                    if (oggi.getMonth() < nascita.getMonth() || (oggi.getMonth() === nascita.getMonth() && oggi.getDate() < nascita.getDate())) calcoloEta--;
+                    eta = calcoloEta;
+                }
+                
+                html += `<tr onclick='mostraDettaglioAssistito(${JSON.stringify(s).replace(/'/g, "&apos;")})' style="cursor: pointer;">
+                    <td><strong>${s.numeroScheda || '-'}</strong></td>
+                    <td>${s.nome || ''} ${s.cognome || ''}</td>
+                    <td>📍 ${s.comune || ''}</td>
+                    <td>${s.dataNascita ? new Date(s.dataNascita).toLocaleDateString('it-IT') : '-'}</td>
+                    <td>${eta}</td>
+                    <td>${s.cellulare || '-'}</td>
+                    <td><span class="badge ${badgeClass}">${stato}</span></td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table>';
+            resultsDiv.innerHTML = html;
+        }
+        
+        function cercaAssistito() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const resultsDiv = document.getElementById('search-results');
+            
+            if (query === '') {
+                resultsDiv.innerHTML = '<p style="color:#999;text-align:center;padding:20px">Digita per cercare un assistito</p>';
+                return;
+            }
+            
+            const risultati = schedeCache.filter(s => {
+                const nome = (s.nome || '').toLowerCase();
+                const cognome = (s.cognome || '').toLowerCase();
+                const scheda = (s.numeroScheda || '').toLowerCase();
+                const comune = (s.comune || '').toLowerCase();
+                
+                return nome.includes(query) || cognome.includes(query) || scheda.includes(query) || comune.includes(query);
+            });
+            
+            if (risultati.length === 0) {
+                resultsDiv.innerHTML = '<div class="empty-state"><div class="empty-state-icon">😕</div><p>Nessun assistito trovato</p></div>';
+                return;
+            }
+            
+            let html = '';
+            risultati.forEach(s => {
+                const installato = s.IMEI && s.IMEI.trim() !== '';
+                const pianificato = s.meseInstallazionePrevisto && s.meseInstallazionePrevisto !== 'Non pianificato' && s.meseInstallazionePrevisto !== '';
+                
+                let badges = '';
+                if (installato) {
+                    badges += `<span class="badge badge-success">✅ Installato</span>`;
+                }
+                if (pianificato) {
+                    badges += `<span class="badge badge-info">📅 ${formatMeseInstallazione(s.meseInstallazionePrevisto)}</span>`;
+                }
+                if (!installato && !pianificato) {
+                    badges += `<span class="badge badge-warning">⚠️ Non pianificato</span>`;
+                }
+                
+                html += `
+                    <div class="assistito-card" onclick='mostraDettaglioAssistito(${JSON.stringify(s).replace(/'/g, "&apos;")})'>
+                        <div class="assistito-info">
+                            <div class="assistito-nome">${s.nome || ''} ${s.cognome || ''}</div>
+                            <div class="assistito-dettagli">
+                                📋 Scheda: <strong>${s.numeroScheda || '-'}</strong> | 
+                                📍 ${s.comune || '-'} | 
+                                🎂 ${s.dataNascita || '-'}
+                            </div>
+                            ${installato ? `<div class="assistito-dettagli" style="margin-top:5px">📱 IMEI: <code>${s.IMEI}</code></div>` : ''}
+                        </div>
+                        <div class="assistito-badges">
+                            ${badges}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function mostraDettaglioAssistito(scheda) {
+            // Carica la scheda completa nel form
+            caricaSchedaCompleta(scheda);
+            
+            // Switch al tab "Nuova Scheda" 
+            switchTab('nuova');
+        }
+        
+function caricaSchedaCompleta(scheda) {
+            // Popola TUTTI i 61 campi del form completo
+            
+            // DATI ASSISTITO (campi 1-9)
+            document.getElementById('numeroScheda').value = scheda.numeroScheda || '';
+            document.getElementById('nome').value = scheda.nome || '';
+            document.getElementById('cognome').value = scheda.cognome || '';
+            
+            // Data nascita
+            if (scheda.dataNascita) {
+                const data = new Date(scheda.dataNascita);
+                document.getElementById('giorno').value = data.getDate();
+                document.getElementById('mese').value = data.getMonth() + 1;
+                document.getElementById('anno').value = data.getFullYear();
+                calcolaEta();
+            }
+            
+            document.getElementById('indirizzoResidenza').value = scheda.indirizzoResidenza || '';
+            document.getElementById('comune').value = scheda.comune || '';
+            document.getElementById('telFisso').value = scheda.telFisso || '';
+            document.getElementById('cellulare').value = scheda.cellulare || '';
+            
+            // CAREGIVER B (campi 10-14)
+            if (document.getElementById('caregiverB_nome')) document.getElementById('caregiverB_nome').value = scheda.caregiverB_nome || '';
+            if (document.getElementById('caregiverB_cognome')) document.getElementById('caregiverB_cognome').value = scheda.caregiverB_cognome || '';
+            if (document.getElementById('caregiverB_parentela')) document.getElementById('caregiverB_parentela').value = scheda.caregiverB_parentela || '';
+            if (document.getElementById('caregiverB_email')) document.getElementById('caregiverB_email').value = scheda.caregiverB_email || '';
+            if (document.getElementById('caregiverB_cellulare')) document.getElementById('caregiverB_cellulare').value = scheda.caregiverB_cellulare || '';
+            if (document.getElementById('caregiverB_chiavi')) document.getElementById('caregiverB_chiavi').value = scheda.caregiverB_chiavi || '';
+            
+            // CAREGIVER C (campi 15-20)
+            if (document.getElementById('caregiverC_nome')) document.getElementById('caregiverC_nome').value = scheda.caregiverC_nome || '';
+            if (document.getElementById('caregiverC_cognome')) document.getElementById('caregiverC_cognome').value = scheda.caregiverC_cognome || '';
+            if (document.getElementById('caregiverC_parentela')) document.getElementById('caregiverC_parentela').value = scheda.caregiverC_parentela || '';
+            if (document.getElementById('caregiverC_email')) document.getElementById('caregiverC_email').value = scheda.caregiverC_email || '';
+            if (document.getElementById('caregiverC_cellulare')) document.getElementById('caregiverC_cellulare').value = scheda.caregiverC_cellulare || '';
+            if (document.getElementById('caregiverC_chiavi')) document.getElementById('caregiverC_chiavi').value = scheda.caregiverC_chiavi || '';
+            
+            // CAREGIVER D (campi 21-26)
+            if (document.getElementById('caregiverD_nome')) document.getElementById('caregiverD_nome').value = scheda.caregiverD_nome || '';
+            if (document.getElementById('caregiverD_cognome')) document.getElementById('caregiverD_cognome').value = scheda.caregiverD_cognome || '';
+            if (document.getElementById('caregiverD_parentela')) document.getElementById('caregiverD_parentela').value = scheda.caregiverD_parentela || '';
+            if (document.getElementById('caregiverD_email')) document.getElementById('caregiverD_email').value = scheda.caregiverD_email || '';
+            if (document.getElementById('caregiverD_cellulare')) document.getElementById('caregiverD_cellulare').value = scheda.caregiverD_cellulare || '';
+            if (document.getElementById('caregiverD_chiavi')) document.getElementById('caregiverD_chiavi').value = scheda.caregiverD_chiavi || '';
+            
+            // CONTATTI SANITARI (campi 27-36)
+            if (document.getElementById('scalettaContatti')) document.getElementById('scalettaContatti').value = scheda.scalettaContatti || '';
+            if (document.getElementById('assSocialeNome')) document.getElementById('assSocialeNome').value = scheda.assSocialeNome || '';
+            if (document.getElementById('assSocialeCellulare')) document.getElementById('assSocialeCellulare').value = scheda.assSocialeCellulare || '';
+            if (document.getElementById('ossNome')) document.getElementById('ossNome').value = scheda.ossNome || '';
+            if (document.getElementById('ossCellulare')) document.getElementById('ossCellulare').value = scheda.ossCellulare || '';
+            if (document.getElementById('infermiereNome')) document.getElementById('infermiereNome').value = scheda.infermiereNome || '';
+            if (document.getElementById('infermiereCellulare')) document.getElementById('infermiereCellulare').value = scheda.infermiereCellulare || '';
+            if (document.getElementById('mmgNome')) document.getElementById('mmgNome').value = scheda.mmgNome || '';
+            if (document.getElementById('mmgCellulare')) document.getElementById('mmgCellulare').value = scheda.mmgCellulare || '';
+            
+            // DATI ANAGRAFICI ESTESI (campi 37-39)
+            if (document.getElementById('natoA')) document.getElementById('natoA').value = scheda.natoA || '';
+            if (document.getElementById('provincia')) document.getElementById('provincia').value = scheda.provincia || '';
+            if (document.getElementById('codiceFiscale')) document.getElementById('codiceFiscale').value = scheda.codiceFiscale || '';
+            
+            // ABITAZIONE (campi 40-42)
+            if (document.getElementById('tipoAbitazione')) document.getElementById('tipoAbitazione').value = scheda.tipoAbitazione || '';
+            if (document.getElementById('piano')) document.getElementById('piano').value = scheda.piano || '';
+            if (document.getElementById('ascensore')) document.getElementById('ascensore').value = scheda.ascensore || '';
+            
+            // DATI SANITARI (campi 43-50)
+            if (document.getElementById('sesso')) document.getElementById('sesso').value = scheda.sesso || '';
+            if (document.getElementById('peso')) document.getElementById('peso').value = scheda.peso || '';
+            if (document.getElementById('altezza')) document.getElementById('altezza').value = scheda.altezza || '';
+            if (document.getElementById('patologie')) document.getElementById('patologie').value = scheda.patologie || '';
+            if (document.getElementById('farmaci')) document.getElementById('farmaci').value = scheda.farmaci || '';
+            if (document.getElementById('freqCardiacaMin')) document.getElementById('freqCardiacaMin').value = scheda.freqCardiacaMin || '';
+            if (document.getElementById('freqCardiacaMax')) document.getElementById('freqCardiacaMax').value = scheda.freqCardiacaMax || '';
+            if (document.getElementById('saturazioneMin')) document.getElementById('saturazioneMin').value = scheda.saturazioneMin || '';
+            
+            // DISPOSITIVO (campi 51-52)
+            if (document.getElementById('serialeDispositivo')) document.getElementById('serialeDispositivo').value = scheda.IMEI || scheda.serialeDispositivo || '';
+            if (document.getElementById('dataCompilazione')) document.getElementById('dataCompilazione').value = scheda.dataCompilazione || '';
+            
+            // DISPOSITIVI AGGIUNTIVI (campi 53-58)
+            if (document.getElementById('poltrone')) document.getElementById('poltrone').value = scheda.poltrone || '';
+            if (document.getElementById('sensoreLuce')) document.getElementById('sensoreLuce').value = scheda.sensoreLuce || '';
+            if (document.getElementById('sensoreEcg')) document.getElementById('sensoreEcg').value = scheda.sensoreEcg || '';
+            if (document.getElementById('installazionePoltrona')) document.getElementById('installazionePoltrona').value = scheda.installazionePoltrona || '';
+            if (document.getElementById('installazioneSensoreLuce')) document.getElementById('installazioneSensoreLuce').value = scheda.installazioneSensoreLuce || '';
+            if (document.getElementById('installazioneSensoreEcg')) document.getElementById('installazioneSensoreEcg').value = scheda.installazioneSensoreEcg || '';
+            
+            // PIANIFICAZIONE (campi 59-61)
+            if (document.getElementById('meseInstallazionePrevisto')) document.getElementById('meseInstallazionePrevisto').value = scheda.meseInstallazionePrevisto || '';
+            if (document.getElementById('meseInstallazionePoltrona')) document.getElementById('meseInstallazionePoltrona').value = scheda.meseInstallazionePoltrona || '';
+            if (document.getElementById('meseInstallazioneSensoreLuce')) document.getElementById('meseInstallazioneSensoreLuce').value = scheda.meseInstallazioneSensoreLuce || '';
+            if (document.getElementById('meseInstallazioneSensoreEcg')) document.getElementById('meseInstallazioneSensoreEcg').value = scheda.meseInstallazioneSensoreEcg || '';
+            
+            // Aggiorna display riepilogo
+            setTimeout(aggiornaDisplayPianificazione, 100);
+            if (document.getElementById('notePianificazione')) document.getElementById('notePianificazione').value = scheda.notePianificazione || '';
+            if (document.getElementById('note')) document.getElementById('note').value = scheda.note || '';
+        }
+        
+        // FUNZIONE SOSTITUITA CON VERSIONE COMPLETA (61 campi)
+        // Vecchia funzione caricaSchedaCompleta rimossa
+        /*
+        function caricaSchedaCompleta_OLD(scheda) {
+            // Popola tutti i campi del form
+            document.getElementById('numeroScheda').value = scheda.numeroScheda || '';
+            document.getElementById('nome').value = scheda.nome || '';
+            document.getElementById('cognome').value = scheda.cognome || '';
+            
+            // Data nascita
+            if (scheda.dataNascita) {
+                const data = new Date(scheda.dataNascita);
+                document.getElementById('giorno').value = data.getDate();
+                document.getElementById('mese').value = data.getMonth() + 1;
+                document.getElementById('anno').value = data.getFullYear();
+                calcolaEta();
+            }
+            
+            document.getElementById('indirizzoResidenza').value = scheda.indirizzoResidenza || '';
+            document.getElementById('comune').value = scheda.comune || '';
+            document.getElementById('telFisso').value = scheda.telFisso || '';
+            document.getElementById('cellulare').value = scheda.cellulare || '';
+            
+            // Pianificazione
+            document.getElementById('meseInstallazionePrevisto').value = scheda.meseInstallazionePrevisto || '';
+            document.getElementById('notePianificazione').value = scheda.notePianificazione || '';
+            document.getElementById('serialeDispositivo').value = scheda.IMEI || scheda.serialeDispositivo || '';
+            
+            // Data compilazione
+            if (scheda.dataCompilazione) {
+                document.getElementById('dataCompilazione').value = scheda.dataCompilazione;
+            }
+        */
+        
+        // ========================================
+        // FORM GESTIONE
+        // ========================================
         function setupDateInputs() {
             const giorno = document.getElementById('giorno');
             const mese = document.getElementById('mese');
             const anno = document.getElementById('anno');
-
-            if (!giorno || !mese || !anno) {
-                console.error('Campi data non trovati');
-                return;
-            }
-
-            // Auto-jump tra campi
-            giorno.addEventListener('input', function() {
-                if (this.value.length >= 2) {
-                    mese.focus();
-                    mese.select();
-                }
-                calcolaEta();
-            });
-
-            mese.addEventListener('input', function() {
-                if (this.value.length >= 2) {
-                    anno.focus();
-                    anno.select();
-                }
-                calcolaEta();
-            });
-
-            anno.addEventListener('input', function() {
-                if (this.value.length >= 4) {
-                    this.blur(); // Rimuove il focus dopo 4 cifre
-                }
-                calcolaEta();
-            });
-
-            // Calcola età anche quando si esce dai campi
-            giorno.addEventListener('blur', calcolaEta);
-            mese.addEventListener('blur', calcolaEta);
-            anno.addEventListener('blur', calcolaEta);
+            
+            giorno.addEventListener('input', () => { if (giorno.value.length >= 2) mese.focus(); calcolaEta(); });
+            mese.addEventListener('input', () => { if (mese.value.length >= 2) anno.focus(); calcolaEta(); });
+            anno.addEventListener('input', calcolaEta);
         }
-
-        // Calcola età e aggiorna display
+        
         function calcolaEta() {
-            const giorno = parseInt(document.getElementById('giorno').value);
-            const mese = parseInt(document.getElementById('mese').value);
-            const anno = parseInt(document.getElementById('anno').value);
-            const ageDisplay = document.getElementById('ageDisplay');
-
-            if (giorno && mese && anno && giorno >= 1 && giorno <= 31 && mese >= 1 && mese <= 12 && anno >= 1900 && anno <= 2025) {
-                // Crea data di nascita
-                const dataNascita = new Date(anno, mese - 1, giorno);
+            const g = parseInt(document.getElementById('giorno').value);
+            const m = parseInt(document.getElementById('mese').value);
+            const a = parseInt(document.getElementById('anno').value);
+            const display = document.getElementById('ageDisplay');
+            
+            if (g && m && a && g <= 31 && m <= 12 && a >= 1900 && a <= 2025) {
+                const nascita = new Date(a, m - 1, g);
                 const oggi = new Date();
+                let eta = oggi.getFullYear() - nascita.getFullYear();
+                if (oggi.getMonth() < nascita.getMonth() || (oggi.getMonth() === nascita.getMonth() && oggi.getDate() < nascita.getDate())) eta--;
                 
-                // Calcola età
-                let eta = oggi.getFullYear() - dataNascita.getFullYear();
-                const differenzaMesi = oggi.getMonth() - dataNascita.getMonth();
-                
-                if (differenzaMesi < 0 || (differenzaMesi === 0 && oggi.getDate() < dataNascita.getDate())) {
-                    eta--;
-                }
-
-                // Aggiorna display
-                ageDisplay.className = 'age-display';
-                ageDisplay.innerHTML = `🎂 ${eta} anni`;
-
-                // Aggiorna campo hidden per backend
-                const dataFormatted = `${anno}-${String(mese).padStart(2, '0')}-${String(giorno).padStart(2, '0')}`;
-                document.getElementById('dataNascita').value = dataFormatted;
+                display.className = 'age-display';
+                display.textContent = `🎂 ${eta} anni`;
+                document.getElementById('dataNascita').value = `${a}-${String(m).padStart(2, '0')}-${String(g).padStart(2, '0')}`;
             } else {
-                ageDisplay.className = 'age-display empty';
-                ageDisplay.innerHTML = '🎂 - anni';
-                document.getElementById('dataNascita').value = '';
+                display.className = 'age-display empty';
+                display.textContent = '🎂 - anni';
             }
         }
-
-        // Verifica che l'URL sia stato configurato
-        function verificaConfigurazione() {
-            if (!DEPLOY_URL || DEPLOY_URL === 'INSERIRE_QUI_URL_GOOGLE_APPS_SCRIPT') {
-                aggiornaStato('disconnected', '⚠️ URL Google Apps Script non configurato');
-                mostraMessaggio('error', '⚠️ ATTENZIONE: Devi configurare l\'URL del Google Apps Script nel codice HTML prima di utilizzare il modulo.');
-                return false;
-            }
-            return true;
-        }
-
-        // Imposta data di oggi nel campo dataCompilazione
+        
         function impostaDataOggi() {
-            const oggi = new Date().toISOString().split('T')[0];
-            document.getElementById('dataCompilazione').value = oggi;
+            document.getElementById('dataCompilazione').value = new Date().toISOString().split('T')[0];
         }
-
-        // Gestione submit form
+        
+        function resetForm() {
+            if (confirm('Vuoi resettare il form?')) {
+                document.getElementById('assistitoForm').reset();
+                impostaDataOggi();
+                document.getElementById('ageDisplay').className = 'age-display empty';
+                document.getElementById('ageDisplay').textContent = '🎂 - anni';
+            }
+        }
+        
         document.getElementById('assistitoForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            if (!verificaConfigurazione()) {
-                return;
-            }
-            
             salvaScheda();
         });
-
-        // Salva scheda su Google Sheets
+        
         function salvaScheda() {
             const formData = new FormData(document.getElementById('assistitoForm'));
             const schedaData = {};
+            formData.forEach((value, key) => { schedaData[key] = value; });
             
-            formData.forEach((value, key) => {
-                schedaData[key] = value;
-            });
-
-            mostraLoading('Salvataggio in corso...');
-
-            // Timeout personalizzato per iPhone (30 secondi)
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000);
-
+            mostraLoading('Salvataggio...');
+            
             fetch(DEPLOY_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                signal: controller.signal,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'save',
-                    data: schedaData
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'save', data: schedaData })
             })
             .then(() => {
-                clearTimeout(timeoutId);
                 nascondiLoading();
-                mostraMessaggio('success', `✅ Salvataggio effettuato! Scheda N° ${schedaData.numeroScheda} salvata con successo.`);
-                
+                mostraMessaggio('success', `✅ Scheda ${schedaData.numeroScheda} salvata!`);
                 setTimeout(() => {
                     caricaSchede();
-                    nuovaSchedaAutomatico();
+                    resetForm();
+                    switchTab('dashboard');
                 }, 1500);
             })
             .catch(error => {
-                clearTimeout(timeoutId);
                 nascondiLoading();
-                console.error('Errore:', error);
-                if (error.name === 'AbortError') {
-                    mostraMessaggio('error', `⏱️ Timeout durante il salvataggio. Riprova.`);
-                } else {
-                    mostraMessaggio('info', `ℹ️ Scheda inviata al server. Apertura nuova scheda...`);
-                    setTimeout(() => {
-                        caricaSchede();
-                        nuovaSchedaAutomatico();
-                    }, 2000);
-                }
+                console.error(error);
+                mostraMessaggio('info', '📤 Scheda inviata (modalità no-cors)');
+                setTimeout(() => { caricaSchede(); }, 2000);
             });
         }
-
-        // Nuova scheda automatica (senza conferma)
-        function nuovaSchedaAutomatico() {
-            document.getElementById('assistitoForm').reset();
-            impostaDataOggi();
-            
-            // Reset età display
-            const ageDisplay = document.getElementById('ageDisplay');
-            ageDisplay.className = 'age-display empty';
-            ageDisplay.innerHTML = '🎂 - anni';
-            
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Carica tutte le schede da Google Sheets
-        function caricaSchede() {
-            if (!verificaConfigurazione()) {
-                return;
-            }
-
-            aggiornaStato('loading', 'Caricamento schede...');
-
-            // Timeout personalizzato per iPhone (30 secondi)
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-            fetch(DEPLOY_URL + '?action=getAll', { signal: controller.signal })
-                .then(response => {
-                    clearTimeout(timeoutId);
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        schedeCache = data.data || [];
-                        schedeFiltrate = schedeCache;
-                        
-                        aggiornaStato('connected', `✅ Connesso - ${schedeCache.length} schede caricate`);
-                        document.getElementById('totalSchede').textContent = schedeCache.length;
-                        
-                        aggiornaStatistiche();
-                    } else {
-                        aggiornaStato('disconnected', '❌ Errore caricamento');
-                        mostraMessaggio('error', 'Errore nel caricamento delle schede: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    clearTimeout(timeoutId);
-                    console.error('Errore:', error);
-                    if (error.name === 'AbortError') {
-                        aggiornaStato('disconnected', '⏱️ Timeout - Riprova');
-                        mostraMessaggio('error', 'La connessione ha impiegato troppo tempo. Prova a ricaricare.');
-                    } else {
-                        aggiornaStato('disconnected', '❌ Errore connessione');
-                        mostraMessaggio('error', 'Errore di connessione al server Google Sheets');
-                    }
-                });
-        }
-
-        // Aggiorna stato connessione
-        function aggiornaStato(stato, testo) {
-            const statusDot = document.getElementById('statusDot');
-            const statusText = document.getElementById('statusText');
-            
-            statusDot.className = 'status-dot ' + stato;
-            statusText.textContent = testo;
-        }
-
-        // Mostra messaggio
-        function mostraMessaggio(tipo, testo) {
-            const messageBox = document.getElementById('messageBox');
-            messageBox.className = 'message ' + tipo;
-            messageBox.textContent = testo;
-            messageBox.style.display = 'block';
-            
-            setTimeout(() => {
-                messageBox.style.display = 'none';
-            }, 5000);
-        }
-
-        // Mostra/nascondi loading
+        
+        // ========================================
+        // UTILITY
+        // ========================================
         function mostraLoading(testo) {
             document.getElementById('loadingText').textContent = testo;
             document.getElementById('loadingOverlay').style.display = 'flex';
         }
-
+        
         function nascondiLoading() {
             document.getElementById('loadingOverlay').style.display = 'none';
         }
-
-        // Aggiorna statistiche nella barra superiore
-        function aggiornaStatistiche() {
-            const statsBar = document.getElementById('statsBar');
-            
-            if (schedeCache.length === 0) {
-                statsBar.style.display = 'none';
-                return;
-            }
-            
-            statsBar.style.display = 'flex';
-            
-            // Conta per comune
-            const conteggioComuni = {};
-            schedeCache.forEach(scheda => {
-                const comune = scheda.comune;
-                if (comune) {
-                    conteggioComuni[comune] = (conteggioComuni[comune] || 0) + 1;
-                }
-            });
-            
-            // Totale assistiti
-            document.getElementById('statTotale').textContent = schedeCache.length;
-            
-            // Comuni coperti
-            document.getElementById('statComune').textContent = Object.keys(conteggioComuni).length;
-            
-            // Comune con più assistiti
-            let maxComune = '';
-            let maxCount = 0;
-            Object.entries(conteggioComuni).forEach(([comune, count]) => {
-                if (count > maxCount) {
-                    maxCount = count;
-                    maxComune = comune;
-                }
-            });
-            document.getElementById('statPiuComune').textContent = maxComune ? `${maxComune} (${maxCount})` : '-';
+        
+        function mostraMessaggio(tipo, testo) {
+            const box = document.getElementById('messageBox');
+            box.className = 'message ' + tipo;
+            box.textContent = testo;
+            box.style.display = 'block';
+            setTimeout(() => { box.style.display = 'none'; }, 5000);
         }
-
-        // Mostra lista schede in modal
-        function mostraListaSchede() {
-            if (schedeCache.length === 0) {
-                mostraMessaggio('info', 'Nessuna scheda disponibile');
-                return;
+    
+        // ========================================
+        // CONFIGURAZIONE OBIETTIVI COMUNI
+        // ========================================
+        function toggleConfigPanel() {
+            const panel = document.getElementById('config-obiettivi-panel');
+            const icon = document.getElementById('config-toggle-icon');
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                icon.textContent = '▲';
+                renderConfigObiettivi();
+            } else {
+                panel.style.display = 'none';
+                icon.textContent = '▼';
+            }
+        }
+        
+        function renderConfigObiettivi() {
+            const defaultObiettivi = {
+                'Trapani': 46,
+                'Erice': 19,
+                'Valderice': 8,
+                'Paceco': 8,
+                'Misiliscemi': 7,
+                'Custonaci': 4,
+                'San Vito Lo Capo': 3,
+                'Favignana': 3,
+                'Buseto Palizzolo': 2
+            };
+            
+            let obiettivi = defaultObiettivi;
+            try {
+                const saved = localStorage.getItem('obiettivi_comuni');
+                if (saved) {
+                    obiettivi = JSON.parse(saved);
+                }
+            } catch(e) {
+                console.log('Usando obiettivi default');
             }
             
-            const modal = document.getElementById('listaSchedeModal');
-            const content = document.getElementById('listaSchedeContent');
+            const comuni = Object.keys(obiettivi);
+            let htmlContent = '';
             
-            content.innerHTML = '';
-            
-            schedeFiltrate.forEach(scheda => {
-                const item = document.createElement('div');
-                item.className = 'scheda-item';
-                item.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong style="font-size: 18px; color: #667eea;">Scheda N° ${scheda.numeroScheda}</strong><br>
-                            <span style="font-size: 16px; color: #333;">${scheda.nome} ${scheda.cognome}</span><br>
-                            <span style="font-size: 14px; color: #666;">📍 ${scheda.comune}</span>
-                        </div>
-                        <div style="text-align: right;">
-                            <span style="font-size: 12px; color: #999;">📅 ${scheda.dataCompilazione || 'N/D'}</span>
-                        </div>
+            comuni.forEach(comune => {
+                const safeId = comune.replace(/\s+/g, '-').replace(/'/g, '');
+                htmlContent += `
+                    <div style="padding: 15px; background: #f8f9fa; border-radius: 8px; border: 2px solid #dee2e6;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #495057;">
+                            ${comune}
+                        </label>
+                        <input 
+                            type="number" 
+                            id="obiettivo-${safeId}" 
+                            value="${obiettivi[comune]}" 
+                            min="0" 
+                            max="200"
+                            style="width: 100%; padding: 10px; border: 2px solid #ced4da; border-radius: 6px; font-size: 16px; font-weight: 600; text-align: center;"
+                        />
                     </div>
                 `;
-                
-                item.onclick = () => caricaSchedaInForm(scheda);
-                
-                content.appendChild(item);
             });
             
-            modal.style.display = 'block';
+            document.getElementById('config-obiettivi-grid').innerHTML = htmlContent;
         }
-
-        // Carica scheda nel form per modifica
-        function caricaSchedaInForm(scheda) {
-            // Reset form
-            document.getElementById('assistitoForm').reset();
+        
+        function salvaObiettivi() {
+            const obiettivi = {};
             
-            // Carica campi normali
-            Object.keys(scheda).forEach(key => {
-                const input = document.getElementById(key);
-                if (input && key !== 'dataNascita') {
-                    input.value = scheda[key] || '';
-                }
-            });
+            // Leggi tutti i campi input in modo sicuro
+            const defaultObiettivi = {
+                'Trapani': 46,
+                'Erice': 19,
+                'Valderice': 8,
+                'Paceco': 8,
+                'Misiliscemi': 7,
+                'Custonaci': 4,
+                'San Vito Lo Capo': 3,
+                'Favignana': 3,
+                'Buseto Palizzolo': 2
+            };
             
-            // Gestione data di nascita
-            if (scheda.dataNascita) {
-                const parts = scheda.dataNascita.split('-');
-                if (parts.length === 3) {
-                    document.getElementById('anno').value = parts[0];
-                    document.getElementById('mese').value = parseInt(parts[1]);
-                    document.getElementById('giorno').value = parseInt(parts[2]);
-                    calcolaEta();
-                }
-            }
-            
-            chiudiModal();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            mostraMessaggio('info', `📝 Scheda N° ${scheda.numeroScheda} caricata per modifica`);
-        }
-
-        // Filtra schede per comune
-        function filtraSchedePerComune() {
-            const filtroComune = document.getElementById('filtroComune').value;
-            
-            if (filtroComune === '') {
-                schedeFiltrate = schedeCache;
-            } else {
-                schedeFiltrate = schedeCache.filter(scheda => scheda.comune === filtroComune);
-            }
-            
-            mostraListaSchede();
-        }
-
-        // Mostra statistiche dettagliate
-        function mostraStatistiche() {
-            if (schedeCache.length === 0) {
-                mostraMessaggio('info', 'Nessuna scheda disponibile per statistiche');
-                return;
-            }
-            
-            const modal = document.getElementById('statisticheModal');
-            const content = document.getElementById('statisticheContent');
-            
-            // Conta per comune
-            const conteggioComuni = {};
-            schedeCache.forEach(scheda => {
-                const comune = scheda.comune;
-                if (comune) {
-                    conteggioComuni[comune] = (conteggioComuni[comune] || 0) + 1;
-                }
-            });
-            
-            let html = '<div style="overflow-x: auto;">';
-            html += '<table style="width: 100%; border-collapse: collapse; margin-top: 20px;">';
-            html += '<thead><tr style="background: #667eea; color: white;">';
-            html += '<th style="padding: 12px; text-align: left;">Comune</th>';
-            html += '<th style="padding: 12px; text-align: center;">Assistiti Attuali</th>';
-            html += '<th style="padding: 12px; text-align: center;">Obiettivo</th>';
-            html += '<th style="padding: 12px; text-align: center;">% Completamento</th>';
-            html += '<th style="padding: 12px; text-align: center;">Mancanti</th>';
-            html += '<th style="padding: 12px; text-align: center;">Stato</th>';
-            html += '</tr></thead><tbody>';
-            
-            Object.entries(OBIETTIVI_COMUNI).sort((a, b) => b[1] - a[1]).forEach(([comune, obiettivo]) => {
-                const count = conteggioComuni[comune] || 0;
-                const percentuale = ((count / obiettivo) * 100).toFixed(1);
-                const mancanti = Math.max(0, obiettivo - count);
-                
-                let stato = '';
-                let coloreSfondo = '';
-                
-                if (parseFloat(percentuale) >= 100) {
-                    stato = '✅ Completato';
-                    coloreSfondo = '#d4edda';
-                } else if (parseFloat(percentuale) >= 75) {
-                    stato = '🟢 Ottimo';
-                    coloreSfondo = '#fff3cd';
-                } else if (parseFloat(percentuale) >= 50) {
-                    stato = '🟡 In corso';
-                    coloreSfondo = '#ffe5cc';
-                } else if (parseFloat(percentuale) > 0) {
-                    stato = '🟠 In ritardo';
-                    coloreSfondo = '#f8d7da';
+            Object.keys(defaultObiettivi).forEach(comune => {
+                const safeId = comune.replace(/\s+/g, '-').replace(/'/g, '');
+                const element = document.getElementById('obiettivo-' + safeId);
+                if (element) {
+                    obiettivi[comune] = parseInt(element.value) || defaultObiettivi[comune];
                 } else {
-                    stato = '⚪ Non iniziato';
-                    coloreSfondo = '#f8f9fa';
+                    console.warn('Elemento non trovato per: ' + comune);
+                    obiettivi[comune] = defaultObiettivi[comune];
                 }
-                
-                html += `<tr style="border-bottom: 1px solid #e0e0e0;">`;
-                html += `<td style="padding: 12px;"><strong>${comune}</strong></td>`;
-                html += `<td style="padding: 12px; text-align: center; font-weight: bold; font-size: 18px; color: #667eea;">${count}</td>`;
-                html += `<td style="padding: 12px; text-align: center; font-weight: bold;">${obiettivo}</td>`;
-                html += `<td style="padding: 12px; text-align: center;">${percentuale}%</td>`;
-                html += `<td style="padding: 12px; text-align: center;">${mancanti}</td>`;
-                html += `<td style="padding: 12px; text-align: center; background: ${coloreSfondo}; font-weight: bold;">${stato}</td>`;
-                html += `</tr>`;
             });
             
-            html += '</tbody></table></div>';
-            
-            // Totale generale
-            const totale = schedeCache.length;
-            const percentualeTotale = ((totale / 100) * 100).toFixed(1);
-            
-            html += `<div style="margin-top: 30px; padding: 20px; background: #f0f3ff; border-radius: 10px; border: 2px solid #667eea;">`;
-            html += `<h3 style="color: #667eea; margin-bottom: 15px;">📊 Riepilogo Generale</h3>`;
-            html += `<p style="font-size: 16px; margin-bottom: 10px;"><strong>Totale Assistiti:</strong> ${totale} / 100</p>`;
-            html += `<p style="font-size: 16px; margin-bottom: 10px;"><strong>Completamento:</strong> ${percentualeTotale}%</p>`;
-            html += `<p style="font-size: 16px;"><strong>Comuni Coperti:</strong> ${Object.keys(conteggioComuni).length} / 9</p>`;
-            html += `</div>`;
-            
-            content.innerHTML = html;
-            modal.style.display = 'block';
+            try {
+                localStorage.setItem('obiettivi_comuni', JSON.stringify(obiettivi));
+                alert('✅ Obiettivi salvati con successo!\n\nLe modifiche sono ora visibili nella tabella.');
+                aggiornaTabellaComuni();
+                toggleConfigPanel();
+            } catch(e) {
+                alert('❌ Errore nel salvataggio: ' + e.message);
+            }
         }
-
-        // Chiudi modal
-        function chiudiModal() {
-            document.getElementById('listaSchedeModal').style.display = 'none';
-        }
-
-        function chiudiModalStatistiche() {
-            document.getElementById('statisticheModal').style.display = 'none';
-        }
-
-        // Nuova scheda (con conferma - dal pulsante)
-        function nuovaScheda() {
-            if (confirm('Vuoi creare una nuova scheda? I dati non salvati andranno persi.')) {
-                nuovaSchedaAutomatico();
-                mostraMessaggio('info', '✨ Nuovo modulo pronto per la compilazione');
+        
+        function resetObiettivi() {
+            if (confirm('⚠️ Sei sicuro di voler ripristinare gli obiettivi predefiniti?\n\nQuesta azione cancellerà le tue modifiche.')) {
+                try {
+                    localStorage.removeItem('obiettivi_comuni');
+                    alert('🔄 Obiettivi ripristinati ai valori predefiniti!');
+                    aggiornaTabellaComuni();
+                    toggleConfigPanel();
+                } catch(e) {
+                    alert('❌ Errore: ' + e.message);
+                }
             }
         }
 
-        // Chiudi modal cliccando fuori
-        window.onclick = function(event) {
-            const modals = document.querySelectorAll('.modal');
-            modals.forEach(modal => {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
+    
+        // ========================================
+        // AGGIORNAMENTO RIEPILOGO PIANIFICAZIONE
+        // ========================================
+        function aggiornaDisplayPianificazione() {
+            const displays = {
+                'display_meseDispositivo': 'meseInstallazionePrevisto',
+                'display_mesePoltrona': 'meseInstallazionePoltrona',
+                'display_meseSensoreLuce': 'meseInstallazioneSensoreLuce',
+                'display_meseSensoreEcg': 'meseInstallazioneSensoreEcg'
+            };
+            
+            Object.keys(displays).forEach(displayId => {
+                const displayEl = document.getElementById(displayId);
+                const selectEl = document.getElementById(displays[displayId]);
+                if (displayEl && selectEl) {
+                    displayEl.textContent = selectEl.value || '-';
                 }
             });
         }
+        
+        // Listener per i select di pianificazione
+        function setupPianificazioneListeners() {
+            const selectIds = ['meseInstallazionePrevisto', 'meseInstallazionePoltrona', 
+                             'meseInstallazioneSensoreLuce', 'meseInstallazioneSensoreEcg'];
+            selectIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('change', aggiornaDisplayPianificazione);
+                }
+            });
+        }
+
     </script>
 </body>
 </html>
