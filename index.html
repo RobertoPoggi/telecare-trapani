@@ -1195,7 +1195,7 @@
         // ========================================
         // CONFIGURAZIONE
         // ========================================
-        const DEPLOY_URL = 'https://script.google.com/macros/s/AKfycbz7aSklg7wU1blhOUmPoOgPNEP7NM5oZYddgkp5q8GfwqJmu-460gNA8tsltm3u11Gy2w/exec';
+        const DEPLOY_URL = 'https://script.google.com/macros/s/AKfycbzqrj2KnoX0YmHbkaOlIR2RfgTpD6ofQhjGMdnBlV_QcSj7X5njwPOIgUDQeHuGZ7X5/exec';
         
         let schedeCache = [];
         let installatiCache = [];
@@ -1315,13 +1315,27 @@
             };
             
             let OBIETTIVI_COMUNI = defaultObiettivi;
-            try {
-                const saved = localStorage.getItem('obiettivi_comuni');
-                if (saved) {
-                    OBIETTIVI_COMUNI = JSON.parse(saved);
+            
+            // Carica obiettivi dal Google Sheet invece di localStorage
+            async function caricaObiettiviDalServer() {
+                try {
+                    console.log('📊 Caricamento obiettivi dal server...');
+                    const response = await fetch(DEPLOY_URL + '?action=getObiettivi');
+                    const data = await response.json();
+                    
+                    if (data.success && data.obiettivi) {
+                        OBIETTIVI_COMUNI = data.obiettivi;
+                        console.log('✅ Obiettivi caricati dal server:', OBIETTIVI_COMUNI);
+                        aggiornaDashboard();
+                        renderConfigObiettivi();
+                    } else {
+                        console.log('⚠️ Usando obiettivi default');
+                        OBIETTIVI_COMUNI = defaultObiettivi;
+                    }
+                } catch(e) {
+                    console.log('⚠️ Errore caricamento obiettivi, uso default:', e);
+                    OBIETTIVI_COMUNI = defaultObiettivi;
                 }
-            } catch(e) {
-                console.log('Usando obiettivi default');
             }
             
             const COMUNI_DISTRETTO = [
@@ -2010,20 +2024,40 @@ function caricaSchedaCompleta(scheda) {
                 }
             });
             
-            try {
-                localStorage.setItem('obiettivi_comuni', JSON.stringify(obiettivi));
-                alert('✅ Obiettivi salvati con successo!\n\nLe modifiche sono ora visibili nella tabella.');
-                aggiornaTabellaComuni();
-                toggleConfigPanel();
-            } catch(e) {
-                alert('❌ Errore nel salvataggio: ' + e.message);
-            }
+            // Salva obiettivi sul Google Sheet
+            mostraLoading('Salvataggio obiettivi...');
+            
+            fetch(DEPLOY_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'setObiettivi',
+                    obiettivi: obiettivi
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                nascondiLoading();
+                if (data.success) {
+                    OBIETTIVI_COMUNI = obiettivi;
+                    alert('✅ Obiettivi salvati nel Google Sheet!\n\nOra tutti i browser vedranno gli stessi obiettivi.');
+                    aggiornaTabellaComuni();
+                    toggleConfigPanel();
+                } else {
+                    alert('❌ Errore: ' + (data.error || 'Errore sconosciuto'));
+                }
+            })
+            .catch(e => {
+                nascondiLoading();
+                alert('❌ Errore di connessione: ' + e.message);
+                console.error('Errore salvataggio obiettivi:', e);
+            });
         }
         
         function resetObiettivi() {
             if (confirm('⚠️ Sei sicuro di voler ripristinare gli obiettivi predefiniti?\n\nQuesta azione cancellerà le tue modifiche.')) {
                 try {
-                    localStorage.removeItem('obiettivi_comuni');
+                    // Gli obiettivi saranno ripristinati al prossimo caricamento dal server
                     alert('🔄 Obiettivi ripristinati ai valori predefiniti!');
                     aggiornaTabellaComuni();
                     toggleConfigPanel();
