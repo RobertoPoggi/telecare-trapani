@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeleCare H24 v3.5.7 FINAL - Distretto 50 Trapani</title>
+    <title>TeleCare H24 v3.5.8 FINAL - CORS FIX - Distretto 50 Trapani</title>
     
     <!-- Icona Torre di Ligny -->
     <link rel="apple-touch-icon" href="https://cdn1.genspark.ai/user-upload-image/5_generated/a65a552f-4932-467c-9204-3d2950f76226.jpeg">
@@ -852,7 +852,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="version-badge">v3.5.7 ✅</div>
+            <div class="version-badge">v3.5.8 🚀</div>
             <h1>🏥 TeleCare H24 - Distretto 50 Trapani</h1>
             <p>Progetto PNRR | 100 Assistiti | Nov 2025 - Mar 2026</p>
         </div>
@@ -2336,7 +2336,7 @@
             
             fetch(DEPLOY_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'text/plain' },
                 body: JSON.stringify({ 
                     action: 'save', 
                     scheda: schedaData 
@@ -2455,7 +2455,7 @@
             
             fetch(DEPLOY_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'text/plain' },
                 body: JSON.stringify({
                     action: 'setObiettivi',
                     obiettivi: obiettivi
