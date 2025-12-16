@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeleCare H24 v3.6.8 FINAL - Fix Pulsante Nuova Scheda - Distretto 50 Trapani</title>
+    <title>TeleCare H24 v3.6.10 FINAL - Fix Tab Nuova Scheda - Distretto 50 Trapani</title>
     
     <!-- Icona Torre di Ligny -->
     <link rel="apple-touch-icon" href="https://cdn1.genspark.ai/user-upload-image/5_generated/a65a552f-4932-467c-9204-3d2950f76226.jpeg">
@@ -874,7 +874,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="version-badge">v3.6.8 🆕</div>
+            <div class="version-badge">v3.6.10 ✅</div>
             <h1>🏥 TeleCare H24 - Distretto 50 Trapani</h1>
             <p>Progetto PNRR | 100 Assistiti | Nov 2025 - Mar 2026</p>
         </div>
@@ -2266,47 +2266,81 @@
         }
         
         function nuovaScheda() {
-            if (confirm('Vuoi creare una nuova scheda? I dati non salvati andranno persi.')) {
-                // ✅ FIX v3.6.8: Reset COMPLETO con pulizia manuale di TUTTI i campi
-                console.log('🧹 Inizio pulizia form per nuova scheda...');
-                
-                // 1. Reset flag modifica PRIMA di tutto
-                SCHEDA_IN_MODIFICA = false;
-                console.log('✅ Flag SCHEDA_IN_MODIFICA = false');
-                
-                // 2. Reset form HTML
-                const form = document.getElementById('assistitoForm');
-                form.reset();
-                console.log('✅ Form reset() eseguito');
-                
-                // 3. Pulizia MANUALE di tutti i campi input (per sicurezza)
-                const allInputs = form.querySelectorAll('input, select, textarea');
-                allInputs.forEach(input => {
-                    if (input.type === 'checkbox' || input.type === 'radio') {
-                        input.checked = false;
-                    } else if (input.id !== 'dataCompilazione') {
-                        input.value = '';
+            // ✅ FIX v3.6.9: Messaggio confirm più chiaro + gestione errori
+            if (confirm('➕ Vuoi compilare una nuova scheda assistito?\n\n(Eventuali modifiche non salvate andranno perse)')) {
+                try {
+                    console.log('🧹 [NUOVA SCHEDA] Inizio pulizia form...');
+                    
+                    // 1. Reset flag modifica
+                    SCHEDA_IN_MODIFICA = false;
+                    console.log('✅ [NUOVA SCHEDA] Flag modifica = false');
+                    
+                    // 2. Ottieni riferimento al form
+                    const form = document.getElementById('assistitoForm');
+                    if (!form) {
+                        throw new Error('Form assistitoForm non trovato!');
                     }
-                });
-                console.log(`✅ ${allInputs.length} campi puliti manualmente`);
-                
-                // 4. Imposta SOLO data odierna
-                impostaDataOggi();
-                console.log('✅ Data compilazione impostata');
-                
-                // 5. Reset display età
-                document.getElementById('ageDisplay').className = 'age-display empty';
-                document.getElementById('ageDisplay').textContent = '🎂 - anni';
-                
-                // 6. Cambia tab per rendere visibile il form
-                switchTab('dashboard');
-                
-                // 7. Scroll al form
-                setTimeout(() => {
-                    document.getElementById('assistitoForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
-                
-                console.log('✨ Modalità INSERIMENTO attivata - Form completamente pulito!');
+                    
+                    // 3. Reset form HTML
+                    form.reset();
+                    console.log('✅ [NUOVA SCHEDA] Form reset() eseguito');
+                    
+                    // 4. Pulizia MANUALE di tutti i campi
+                    const allInputs = form.querySelectorAll('input, select, textarea');
+                    console.log(`📝 [NUOVA SCHEDA] Trovati ${allInputs.length} campi da pulire`);
+                    
+                    let puliti = 0;
+                    allInputs.forEach(input => {
+                        try {
+                            if (input.type === 'checkbox' || input.type === 'radio') {
+                                input.checked = false;
+                            } else if (input.id !== 'dataCompilazione') {
+                                input.value = '';
+                            }
+                            puliti++;
+                        } catch (e) {
+                            console.warn('⚠️ Errore pulizia campo:', input.id, e);
+                        }
+                    });
+                    console.log(`✅ [NUOVA SCHEDA] ${puliti}/${allInputs.length} campi puliti`);
+                    
+                    // 5. Imposta data odierna
+                    const oggi = new Date().toISOString().split('T')[0];
+                    const dataComp = document.getElementById('dataCompilazione');
+                    if (dataComp) {
+                        dataComp.value = oggi;
+                        console.log(`✅ [NUOVA SCHEDA] Data compilazione = ${oggi}`);
+                    }
+                    
+                    // 6. Reset display età
+                    const ageDisplay = document.getElementById('ageDisplay');
+                    if (ageDisplay) {
+                        ageDisplay.className = 'age-display empty';
+                        ageDisplay.textContent = '🎂 - anni';
+                    }
+                    
+                    // 7. Cambia tab per rendere visibile il form
+                    console.log('📡 [NUOVA SCHEDA] Cambio tab a nuova...');
+                    switchTab('nuova');
+                    
+                    // 8. Scroll al form dopo breve delay
+                    setTimeout(() => {
+                        const formElement = document.getElementById('assistitoForm');
+                        if (formElement) {
+                            formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            console.log('📍 [NUOVA SCHEDA] Scroll al form completato');
+                        }
+                    }, 200);
+                    
+                    console.log('✨ [NUOVA SCHEDA] Form completamente pulito e pronto!');
+                    alert('✅ Form pronto per nuova scheda!\n\nInserisci i dati e clicca "Salva Scheda".');
+                    
+                } catch (error) {
+                    console.error('❌ [NUOVA SCHEDA] ERRORE:', error);
+                    alert('❌ Errore durante la creazione del form:\n' + error.message + '\n\nRicarica la pagina e riprova.');
+                }
+            } else {
+                console.log('❌ [NUOVA SCHEDA] Operazione annullata dall\'utente');
             }
         }
         
