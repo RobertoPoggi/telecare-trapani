@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeleCare H24 v3.6.3 FINAL - Backend v3.4.9 FINAL - Distretto 50 Trapani</title>
+    <title>TeleCare H24 v3.6.4 FINAL - Date Fix - Distretto 50 Trapani</title>
     
     <!-- Icona Torre di Ligny -->
     <link rel="apple-touch-icon" href="https://cdn1.genspark.ai/user-upload-image/5_generated/a65a552f-4932-467c-9204-3d2950f76226.jpeg">
@@ -874,7 +874,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="version-badge">v3.6.3 🚀</div>
+            <div class="version-badge">v3.6.4 📅</div>
             <h1>🏥 TeleCare H24 - Distretto 50 Trapani</h1>
             <p>Progetto PNRR | 100 Assistiti | Nov 2025 - Mar 2026</p>
         </div>
@@ -1974,12 +1974,25 @@
                     badgeClass = 'badge-info';
                 }
                 
+                // ✅ FIX v3.6.4: Parser manuale DD/MM/YY → DD/MM/YYYY per visualizzazione
+                let dataFormattata = '-';
+                if (s.dataNascita) {
+                    const match = s.dataNascita.match(/^(\d{2})\/(\d{2})\/(\d{2})$/);
+                    if (match) {
+                        const [_, giorno, mese, anno] = match;
+                        const annoCompleto = parseInt(anno) <= 30 ? `20${anno}` : `19${anno}`;
+                        dataFormattata = `${giorno}/${mese}/${annoCompleto}`;
+                    } else {
+                        dataFormattata = s.dataNascita;
+                    }
+                }
+                
                 const eta = s.eta || 'N/A';  // ✅ Usa età dal backend (già calcolata correttamente)
                 html += `<tr onclick='mostraDettaglioAssistito(${JSON.stringify(s).replace(/'/g, "&apos;")})' style="cursor: pointer;">
                     <td><strong>${s.numeroScheda || '-'}</strong></td>
                     <td>${s.nome || ''} ${s.cognome || ''}</td>
                     <td>📍 ${s.comune || ''}</td>
-                    <td>${s.dataNascita ? new Date(s.dataNascita).toLocaleDateString('it-IT') : '-'}</td>
+                    <td>${dataFormattata}</td>
                     <td>${eta}</td>
                     <td>${s.cellulare || '-'}</td>
                     <td><span class="badge ${badgeClass}">${stato}</span></td>
