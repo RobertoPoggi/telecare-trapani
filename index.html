@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeleCare H24 v3.6.10 FINAL - Fix Tab Nuova Scheda - Distretto 50 Trapani</title>
+    <title>TeleCare H24 v3.6.11 FINAL - Nuova Scheda Senza Popup - Distretto 50 Trapani</title>
     
     <!-- Icona Torre di Ligny -->
     <link rel="apple-touch-icon" href="https://cdn1.genspark.ai/user-upload-image/5_generated/a65a552f-4932-467c-9204-3d2950f76226.jpeg">
@@ -874,7 +874,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="version-badge">v3.6.10 ✅</div>
+            <div class="version-badge">v3.6.11 ⚡</div>
             <h1>🏥 TeleCare H24 - Distretto 50 Trapani</h1>
             <p>Progetto PNRR | 100 Assistiti | Nov 2025 - Mar 2026</p>
         </div>
@@ -2266,8 +2266,7 @@
         }
         
         function nuovaScheda() {
-            // ✅ FIX v3.6.9: Messaggio confirm più chiaro + gestione errori
-            if (confirm('➕ Vuoi compilare una nuova scheda assistito?\n\n(Eventuali modifiche non salvate andranno perse)')) {
+            // ✅ FIX v3.6.11: Rimosso confirm inutile
                 try {
                     console.log('🧹 [NUOVA SCHEDA] Inizio pulizia form...');
                     
@@ -2333,15 +2332,11 @@
                     }, 200);
                     
                     console.log('✨ [NUOVA SCHEDA] Form completamente pulito e pronto!');
-                    alert('✅ Form pronto per nuova scheda!\n\nInserisci i dati e clicca "Salva Scheda".');
                     
                 } catch (error) {
                     console.error('❌ [NUOVA SCHEDA] ERRORE:', error);
                     alert('❌ Errore durante la creazione del form:\n' + error.message + '\n\nRicarica la pagina e riprova.');
                 }
-            } else {
-                console.log('❌ [NUOVA SCHEDA] Operazione annullata dall\'utente');
-            }
         }
         
         // ========================================
