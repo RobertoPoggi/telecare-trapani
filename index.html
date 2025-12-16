@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeleCare H24 v3.6.7 FINAL - Fix Data Compilazione + Nuova Scheda - Distretto 50 Trapani</title>
+    <title>TeleCare H24 v3.6.8 FINAL - Fix Pulsante Nuova Scheda - Distretto 50 Trapani</title>
     
     <!-- Icona Torre di Ligny -->
     <link rel="apple-touch-icon" href="https://cdn1.genspark.ai/user-upload-image/5_generated/a65a552f-4932-467c-9204-3d2950f76226.jpeg">
@@ -874,7 +874,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="version-badge">v3.6.7 ✅</div>
+            <div class="version-badge">v3.6.8 🆕</div>
             <h1>🏥 TeleCare H24 - Distretto 50 Trapani</h1>
             <p>Progetto PNRR | 100 Assistiti | Nov 2025 - Mar 2026</p>
         </div>
@@ -884,7 +884,7 @@
             <button class="nav-tab" onclick="switchTab('installati')">✅ Installati</button>
             <button class="nav-tab" onclick="switchTab('pianificati')">📅 Pianificati</button>
             <button class="nav-tab" onclick="switchTab('ricerca')">🔍 Ricerca</button>
-            <button class="nav-tab" onclick="switchTab('nuova')">➕ Nuova</button>
+            <button class="nav-tab" onclick="nuovaScheda()">➕ Nuova</button>
         </div>
         
         <!-- TAB DASHBOARD -->
@@ -2267,28 +2267,46 @@
         
         function nuovaScheda() {
             if (confirm('Vuoi creare una nuova scheda? I dati non salvati andranno persi.')) {
-                // ✅ FIX v3.6.7: Reset completo + cambio tab
+                // ✅ FIX v3.6.8: Reset COMPLETO con pulizia manuale di TUTTI i campi
+                console.log('🧹 Inizio pulizia form per nuova scheda...');
+                
+                // 1. Reset flag modifica PRIMA di tutto
                 SCHEDA_IN_MODIFICA = false;
+                console.log('✅ Flag SCHEDA_IN_MODIFICA = false');
                 
-                // Reset form
-                document.getElementById('assistitoForm').reset();
+                // 2. Reset form HTML
+                const form = document.getElementById('assistitoForm');
+                form.reset();
+                console.log('✅ Form reset() eseguito');
                 
-                // Imposta data odierna
+                // 3. Pulizia MANUALE di tutti i campi input (per sicurezza)
+                const allInputs = form.querySelectorAll('input, select, textarea');
+                allInputs.forEach(input => {
+                    if (input.type === 'checkbox' || input.type === 'radio') {
+                        input.checked = false;
+                    } else if (input.id !== 'dataCompilazione') {
+                        input.value = '';
+                    }
+                });
+                console.log(`✅ ${allInputs.length} campi puliti manualmente`);
+                
+                // 4. Imposta SOLO data odierna
                 impostaDataOggi();
+                console.log('✅ Data compilazione impostata');
                 
-                // Reset display età
+                // 5. Reset display età
                 document.getElementById('ageDisplay').className = 'age-display empty';
                 document.getElementById('ageDisplay').textContent = '🎂 - anni';
                 
-                // Reset tutti i campi data nascita
-                document.getElementById('giornoNascita').value = '';
-                document.getElementById('meseNascita').value = '';
-                document.getElementById('annoNascita').value = '';
-                
-                // Cambia tab per rendere visibile il form vuoto
+                // 6. Cambia tab per rendere visibile il form
                 switchTab('dashboard');
                 
-                console.log('✨ Modalità INSERIMENTO attivata (nuova scheda - form pulito)');
+                // 7. Scroll al form
+                setTimeout(() => {
+                    document.getElementById('assistitoForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+                
+                console.log('✨ Modalità INSERIMENTO attivata - Form completamente pulito!');
             }
         }
         
