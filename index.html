@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeleCare H24 v3.6.6 FINAL - Backend v3.5.2 Dates Fixed - Distretto 50 Trapani</title>
+    <title>TeleCare H24 v3.6.7 FINAL - Fix Data Compilazione + Nuova Scheda - Distretto 50 Trapani</title>
     
     <!-- Icona Torre di Ligny -->
     <link rel="apple-touch-icon" href="https://cdn1.genspark.ai/user-upload-image/5_generated/a65a552f-4932-467c-9204-3d2950f76226.jpeg">
@@ -874,7 +874,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="version-badge">v3.6.6 🎉</div>
+            <div class="version-badge">v3.6.7 ✅</div>
             <h1>🏥 TeleCare H24 - Distretto 50 Trapani</h1>
             <p>Progetto PNRR | 100 Assistiti | Nov 2025 - Mar 2026</p>
         </div>
@@ -2166,7 +2166,20 @@
             document.getElementById('saturazioneMin').value = scheda.saturazioneMin || '';
             
             document.getElementById('serialeDispositivo').value = scheda.IMEI || scheda.serialeDispositivo || '';
-            document.getElementById('dataCompilazione').value = scheda.dataCompilazione || '';
+            
+            // ✅ FIX v3.6.7: Conversione data compilazione da DD/MM/YY a YYYY-MM-DD
+            if (scheda.dataCompilazione) {
+                const match = scheda.dataCompilazione.match(/(\d{2})\/(\d{2})\/(\d{2})/);
+                if (match) {
+                    const [_, giorno, mese, anno] = match;
+                    const annoCompleto = parseInt(anno) <= 30 ? `20${anno}` : `19${anno}`;
+                    document.getElementById('dataCompilazione').value = `${annoCompleto}-${mese}-${giorno}`;
+                } else {
+                    document.getElementById('dataCompilazione').value = '';
+                }
+            } else {
+                document.getElementById('dataCompilazione').value = '';
+            }
             
             document.getElementById('poltrone').value = scheda.poltrone || '';
             document.getElementById('sensoreLuce').value = scheda.sensoreLuce || '';
@@ -2254,13 +2267,28 @@
         
         function nuovaScheda() {
             if (confirm('Vuoi creare una nuova scheda? I dati non salvati andranno persi.')) {
-                // ✅ FIX v3.5.2: Reset flag modifica
+                // ✅ FIX v3.6.7: Reset completo + cambio tab
                 SCHEDA_IN_MODIFICA = false;
+                
+                // Reset form
                 document.getElementById('assistitoForm').reset();
+                
+                // Imposta data odierna
                 impostaDataOggi();
+                
+                // Reset display età
                 document.getElementById('ageDisplay').className = 'age-display empty';
                 document.getElementById('ageDisplay').textContent = '🎂 - anni';
-                console.log('✨ Modalità INSERIMENTO attivata (nuova scheda)');
+                
+                // Reset tutti i campi data nascita
+                document.getElementById('giornoNascita').value = '';
+                document.getElementById('meseNascita').value = '';
+                document.getElementById('annoNascita').value = '';
+                
+                // Cambia tab per rendere visibile il form vuoto
+                switchTab('dashboard');
+                
+                console.log('✨ Modalità INSERIMENTO attivata (nuova scheda - form pulito)');
             }
         }
         
