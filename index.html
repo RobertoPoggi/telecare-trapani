@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeleCare H24 v3.6.1 FINAL - Backend v3.4.9 FINAL - Distretto 50 Trapani</title>
+    <title>TeleCare H24 v3.6.3 FINAL - Backend v3.4.9 FINAL - Distretto 50 Trapani</title>
     
     <!-- Icona Torre di Ligny -->
     <link rel="apple-touch-icon" href="https://cdn1.genspark.ai/user-upload-image/5_generated/a65a552f-4932-467c-9204-3d2950f76226.jpeg">
@@ -874,7 +874,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="version-badge">v3.6.1 🚀</div>
+            <div class="version-badge">v3.6.3 🚀</div>
             <h1>🏥 TeleCare H24 - Distretto 50 Trapani</h1>
             <p>Progetto PNRR | 100 Assistiti | Nov 2025 - Mar 2026</p>
         </div>
@@ -1974,13 +1974,7 @@
                     badgeClass = 'badge-info';
                 }
                 
-                let eta = '-';
-                if (s.dataNascita) {
-                    const nascita = new Date(s.dataNascita);
-                    const oggi = new Date();
-                    let calcoloEta = oggi.getFullYear() - nascita.getFullYear();
-                    if (oggi.getMonth() < nascita.getMonth() || (oggi.getMonth() === nascita.getMonth() && oggi.getDate() < nascita.getDate())) calcoloEta--;
-                    eta = calcoloEta;
+                const eta = s.eta || 'N/A';  // ✅ Usa età dal backend (già calcolata correttamente)
                 }
                 
                 html += `<tr onclick='mostraDettaglioAssistito(${JSON.stringify(s).replace(/'/g, "&apos;")})' style="cursor: pointer;">
@@ -2077,10 +2071,33 @@
             document.getElementById('cognome').value = scheda.cognome || '';
             
             if (scheda.dataNascita) {
-                const data = new Date(scheda.dataNascita);
-                document.getElementById('giorno').value = data.getDate();
-                document.getElementById('mese').value = data.getMonth() + 1;
-                document.getElementById('anno').value = data.getFullYear();
+                // ✅ FIX v3.6.3: Parser manuale per formato DD/MM/YY
+                let giorno, mese, anno;
+                
+                if (typeof scheda.dataNascita === 'string' && scheda.dataNascita.includes('/')) {
+                    // Formato DD/MM/YY o DD/MM/YYYY
+                    const parti = scheda.dataNascita.split('/');
+                    if (parti.length === 3) {
+                        giorno = parseInt(parti[0]);
+                        mese = parseInt(parti[1]);
+                        anno = parseInt(parti[2]);
+                        
+                        // Converti anno 2 cifre in 4 cifre
+                        if (anno < 100) {
+                            anno = (anno > 30) ? 1900 + anno : 2000 + anno;
+                        }
+                    }
+                } else {
+                    // Fallback: usa Date() standard
+                    const data = new Date(scheda.dataNascita);
+                    giorno = data.getDate();
+                    mese = data.getMonth() + 1;
+                    anno = data.getFullYear();
+                }
+                
+                document.getElementById('giorno').value = giorno || '';
+                document.getElementById('mese').value = mese || '';
+                document.getElementById('anno').value = anno || '';
                 calcolaEta();
             }
             
