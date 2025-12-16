@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeleCare H24 v3.5.8 FINAL - CORS FIX - Distretto 50 Trapani</title>
+    <title>TeleCare H24 v3.6.0 FINAL - Backend v3.4.7 Fixed - Distretto 50 Trapani</title>
     
     <!-- Icona Torre di Ligny -->
     <link rel="apple-touch-icon" href="https://cdn1.genspark.ai/user-upload-image/5_generated/a65a552f-4932-467c-9204-3d2950f76226.jpeg">
@@ -852,7 +852,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="version-badge">v3.5.8 🚀</div>
+            <div class="version-badge">v3.6.0 🚀</div>
             <h1>🏥 TeleCare H24 - Distretto 50 Trapani</h1>
             <p>Progetto PNRR | 100 Assistiti | Nov 2025 - Mar 2026</p>
         </div>
@@ -1535,7 +1535,7 @@
         // ========================================
         // ✅ CONFIGURAZIONE GLOBALE
         // ========================================
-        const DEPLOY_URL = 'https://script.google.com/macros/s/AKfycbwCys8bon4Zm59Nd0cp8Zd08e5S3zoQHk-ZU2ZneJ72awf7PzrhXsTUF0WgQiiyazBt/exec';
+        const DEPLOY_URL = 'https://script.google.com/macros/s/AKfycbz7r2ADPMRku7Y8ASESfWcPiqC2IGhciFNXR52w9Wbu2jNO_fKqrkeGVi1cRPAJAq7s/exec';
         
         // ✅ FIX v3.5.2: Traccia se stiamo modificando una scheda esistente
         let SCHEDA_IN_MODIFICA = false;
@@ -1557,7 +1557,7 @@
         };
         
         // ========================================
-        // ✅ FIX CORS: Caricamento con mode no-cors
+        // ✅ FIX CORS: Caricamento obiettivi dal backend
         // ========================================
         async function caricaObiettiviDalServer() {
             try {
@@ -2462,7 +2462,7 @@
                 })
             })
             .then(() => {
-                console.log('💾 [5/5] ✅ Richiesta POST completata (mode: no-cors, response non verificabile)');
+                console.log('💾 [5/5] ✅ Richiesta POST inviata al backend');
                 nascondiLoading();
                 alert('✅ Obiettivi salvati localmente!\n\n📋 Per verificare la sincronizzazione:\n1. Apri Google Sheet\n2. Vai al foglio "Obiettivi"\n3. Verifica che i valori siano aggiornati');
                 toggleConfigPanel();
