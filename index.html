@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeleCare H24 v3.5.5 RESPONSIVE - Distretto 50 Trapani</title>
+    <title>TeleCare H24 v3.5.7 FINAL - Distretto 50 Trapani</title>
     
     <!-- Icona Torre di Ligny -->
     <link rel="apple-touch-icon" href="https://cdn1.genspark.ai/user-upload-image/5_generated/a65a552f-4932-467c-9204-3d2950f76226.jpeg">
@@ -852,7 +852,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="version-badge">v3.5.5 📱</div>
+            <div class="version-badge">v3.5.7 ✅</div>
             <h1>🏥 TeleCare H24 - Distretto 50 Trapani</h1>
             <p>Progetto PNRR | 100 Assistiti | Nov 2025 - Mar 2026</p>
         </div>
@@ -2168,17 +2168,33 @@
         }
         
         function calcolaEtaDaForm() {
-            const g = parseInt(document.getElementById('giorno').value);
-            const m = parseInt(document.getElementById('mese').value);
-            const a = parseInt(document.getElementById('anno').value);
+            console.log('🔍 [ETA] Inizio calcolo età');
+            
+            const gInput = document.getElementById('giorno');
+            const mInput = document.getElementById('mese');
+            const aInput = document.getElementById('anno');
+            
+            if (!gInput || !mInput || !aInput) {
+                console.warn('⚠️ [ETA] Campi data non trovati');
+                return '';
+            }
+            
+            const g = parseInt(gInput.value);
+            const m = parseInt(mInput.value);
+            const a = parseInt(aInput.value);
+            
+            console.log('🔍 [ETA] Valori letti:', { g, m, a });
             
             if (g && m && a && g <= 31 && m <= 12 && a >= 1900 && a <= 2025) {
                 const nascita = new Date(a, m - 1, g);
                 const oggi = new Date();
                 let eta = oggi.getFullYear() - nascita.getFullYear();
                 if (oggi.getMonth() < nascita.getMonth() || (oggi.getMonth() === nascita.getMonth() && oggi.getDate() < nascita.getDate())) eta--;
+                console.log('✅ [ETA] Età calcolata:', eta);
                 return eta;
             }
+            
+            console.warn('⚠️ [ETA] Dati non validi, ritorno stringa vuota');
             return '';
         }
         
@@ -2207,14 +2223,34 @@
         });
         
         function salvaScheda() {
-            const form = document.getElementById('assistitoForm');
+            console.log('🔍 [DEBUG 1] Inizio salvaScheda()');
             
-            const schedaData = {
+            try {
+                const form = document.getElementById('assistitoForm');
+                console.log('🔍 [DEBUG 2] Form trovato:', form ? 'OK' : 'ERRORE');
+                
+                if (!form) {
+                    alert('❌ ERRORE: Form assistitoForm non trovato!');
+                    return;
+                }
+                
+                console.log('🔍 [DEBUG 3] Calcolo età...');
+                let eta;
+                try {
+                    eta = calcolaEtaDaForm();
+                    console.log('🔍 [DEBUG 4] Età calcolata:', eta);
+                } catch (etaError) {
+                    console.error('❌ Errore calcolo età:', etaError);
+                    eta = '';
+                }
+                
+                console.log('🔍 [DEBUG 5] Creazione schedaData...');
+                const schedaData = {
                 numeroScheda: form.numeroScheda.value,
                 nome: form.nome.value,
                 cognome: form.cognome.value,
                 dataNascita: document.getElementById('dataNascita').value,
-                eta: calcolaEtaDaForm(),
+                eta: eta,
                 indirizzoResidenza: form.indirizzoResidenza.value,
                 comune: form.comune.value,
                 telFisso: form.telFisso.value,
@@ -2288,17 +2324,18 @@
                 meseInstallazioneSensoreEcg: form.meseInstallazioneSensoreEcg.value
             };
             
+            console.log('🔍 [DEBUG 6] schedaData creato OK');
             console.log('📤 Invio scheda:', schedaData);
             
             // ✅ FIX v3.5.2: Determina se INSERT o UPDATE
             const isNuovaScheda = !SCHEDA_IN_MODIFICA;
             console.log(`📤 Invio scheda - Modalità: ${isNuovaScheda ? 'INSERT (Nuova)' : 'UPDATE (Modifica)'}`);
             
+            console.log('🔍 [DEBUG 7] Inizio fetch...');
             mostraLoading('Salvataggio...');
             
             fetch(DEPLOY_URL, {
                 method: 'POST',
-                mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     action: 'save', 
@@ -2306,9 +2343,11 @@
                 })
             })
             .then(() => {
+                console.log('🔍 [DEBUG 8] Fetch completato, verifica risposta...');
                 nascondiLoading();
                 mostraMessaggio('success', `✅ Scheda ${schedaData.numeroScheda} ${isNuovaScheda ? 'creata con successo' : 'aggiornata con successo'}!`);
                 setTimeout(() => {
+                    console.log('🔍 [DEBUG 9] Ricaricamento schede...');
                     caricaSchede();
                     // ✅ FIX v3.5.3: Reset form silenzioso dopo INSERT, nessun dialog
                     if (isNuovaScheda) {
@@ -2324,11 +2363,14 @@
                         SCHEDA_IN_MODIFICA = false;
                         console.log('✅ Scheda modificata con successo, flag reset');
                     }
+                    console.log('🔍 [DEBUG 10] Switch a dashboard...');
                     switchTab('dashboard');
+                    console.log('✅ [DEBUG 11] Procedura completata con successo');
                 }, 1500);
             })
             .catch(error => {
-                console.error('Errore salvataggio:', error);
+                console.error('❌ [DEBUG 8] Errore fetch:', error);
+                console.error('❌ Stack:', error.stack);
                 nascondiLoading();
                 mostraMessaggio('info', '📤 Scheda inviata (verifica manualmente su Google Sheet)');
                 setTimeout(() => { 
@@ -2336,6 +2378,13 @@
                     SCHEDA_IN_MODIFICA = false; // Reset anche in caso di errore
                 }, 2000);
             });
+            
+            } catch (error) {
+                console.error('❌ [DEBUG FATALE] Errore in salvaScheda():', error);
+                console.error('❌ Stack trace:', error.stack);
+                nascondiLoading();
+                alert('❌ ERRORE CRITICO: ' + error.message + '\nControlla console (F12) per dettagli');
+            }
         }
         
         // ========================================
@@ -2406,7 +2455,6 @@
             
             fetch(DEPLOY_URL, {
                 method: 'POST',
-                mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     action: 'setObiettivi',
