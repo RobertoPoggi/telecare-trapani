@@ -1975,8 +1975,6 @@
                 }
                 
                 const eta = s.eta || 'N/A';  // ✅ Usa età dal backend (già calcolata correttamente)
-                }
-                
                 html += `<tr onclick='mostraDettaglioAssistito(${JSON.stringify(s).replace(/'/g, "&apos;")})' style="cursor: pointer;">
                     <td><strong>${s.numeroScheda || '-'}</strong></td>
                     <td>${s.nome || ''} ${s.cognome || ''}</td>
@@ -2557,3 +2555,4 @@
     </script>
 </body>
 </html>
+                  
