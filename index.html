@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeleCare H24 v3.6.0 FINAL - Backend v3.4.7 Fixed - Distretto 50 Trapani</title>
+    <title>TeleCare H24 v3.6.1 FINAL - Backend v3.4.9 FINAL - Distretto 50 Trapani</title>
     
     <!-- Icona Torre di Ligny -->
     <link rel="apple-touch-icon" href="https://cdn1.genspark.ai/user-upload-image/5_generated/a65a552f-4932-467c-9204-3d2950f76226.jpeg">
@@ -434,10 +434,20 @@
         }
         
         .message {
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 0;
             display: none;
+            z-index: 10000;
+            min-width: 300px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            font-size: 18px;
+            font-weight: 600;
         }
         
         .message.success {
@@ -700,10 +710,22 @@
             }
             
             /* Messages */
-            .message {
-                font-size: 14px;
-                padding: 12px;
-            }
+        .message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 0;
+            display: none;
+            z-index: 10000;
+            min-width: 300px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            font-size: 18px;
+            font-weight: 600;
+        }
             
             /* Loading overlay */
             #loadingText {
@@ -852,7 +874,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="version-badge">v3.6.0 🚀</div>
+            <div class="version-badge">v3.6.1 🚀</div>
             <h1>🏥 TeleCare H24 - Distretto 50 Trapani</h1>
             <p>Progetto PNRR | 100 Assistiti | Nov 2025 - Mar 2026</p>
         </div>
@@ -1535,7 +1557,7 @@
         // ========================================
         // ✅ CONFIGURAZIONE GLOBALE
         // ========================================
-        const DEPLOY_URL = 'https://script.google.com/macros/s/AKfycbz7r2ADPMRku7Y8ASESfWcPiqC2IGhciFNXR52w9Wbu2jNO_fKqrkeGVi1cRPAJAq7s/exec';
+        const DEPLOY_URL = 'https://script.google.com/macros/s/AKfycbyFkvPQ32-sx_pRlhS7Ljr2vHwo4ABnc4XDQCs1UF0m9ueMwizqOIRITjOlTj1dXNp-/exec';
         
         // ✅ FIX v3.5.2: Traccia se stiamo modificando una scheda esistente
         let SCHEDA_IN_MODIFICA = false;
@@ -2513,7 +2535,7 @@
             box.className = 'message ' + tipo;
             box.textContent = testo;
             box.style.display = 'block';
-            setTimeout(() => { box.style.display = 'none'; }, 5000);
+            setTimeout(() => { box.style.display = 'none'; }, 8000);  // 8 secondi
         }
     </script>
 </body>
