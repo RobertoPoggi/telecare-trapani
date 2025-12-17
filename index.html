@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeleCare H24 v3.6.12 FINAL - Controllo Modifiche Form - Distretto 50 Trapani</title>
+    <title>TeleCare H24 v3.6.13 FINAL - Nuova Scheda Senza Popup - Distretto 50 Trapani</title>
     
     <!-- Icona Torre di Ligny -->
     <link rel="apple-touch-icon" href="https://cdn1.genspark.ai/user-upload-image/5_generated/a65a552f-4932-467c-9204-3d2950f76226.jpeg">
@@ -874,7 +874,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="version-badge">v3.6.12 🛡️</div>
+            <div class="version-badge">v3.6.13 ⚡</div>
             <h1>🏥 TeleCare H24 - Distretto 50 Trapani</h1>
             <p>Progetto PNRR | 100 Assistiti | Nov 2025 - Mar 2026</p>
         </div>
@@ -1565,9 +1565,6 @@
         let schedeCache = [];
         let installatiCache = [];
         let pianificatiCache = [];
-        
-        // ✅ FIX v3.6.12: Tracciamento modifiche form
-        let FORM_MODIFICATO = false;
         
         let OBIETTIVI_COMUNI = {
             'Trapani': 46,
@@ -2269,7 +2266,7 @@
         }
         
         function nuovaScheda() {
-            // ✅ FIX v3.6.11: Rimosso confirm inutile
+            // ✅ FIX v3.6.13: Rimosso confirm inutile
                 try {
                     console.log('🧹 [NUOVA SCHEDA] Inizio pulizia form...');
                     
@@ -2643,86 +2640,72 @@
             box.style.display = 'block';
             setTimeout(() => { box.style.display = 'none'; }, 8000);  // 8 secondi
         }
-    </script>
-</body>
 
         // ========================================
-        // ✅ FIX v3.6.12: CONTROLLO MODIFICHE FORM
+        // ✅ FIX v3.6.13: PROTEZIONE DATI NON SALVATI
         // ========================================
         
-        // Funzione per tracciare modifiche al form
-        function iniziaTracciamentoModifiche() {
+        let FORM_MODIFICATO = false;  // Flag globale per tracciare modifiche
+        
+        // Inizializza listener per tracciare modifiche al form
+        function initFormChangeTracking() {
             const form = document.getElementById('assistitoForm');
             if (!form) return;
             
-            // Listener per tutti i campi input
-            form.addEventListener('input', function() {
-                FORM_MODIFICATO = true;
-                console.log('📝 Form modificato - flag attivato');
+            // Ascolta tutti gli input, textarea e select nel form
+            form.querySelectorAll('input, textarea, select').forEach(campo => {
+                campo.addEventListener('change', () => {
+                    FORM_MODIFICATO = true;
+                    console.log('⚠️ Form modificato - protezione attiva');
+                });
+                
+                // Anche per i campi di testo (input/change non bastano)
+                if (campo.type === 'text' || campo.tagName === 'TEXTAREA') {
+                    campo.addEventListener('input', () => {
+                        FORM_MODIFICATO = true;
+                    });
+                }
             });
             
-            // Listener per select
-            form.addEventListener('change', function() {
-                FORM_MODIFICATO = true;
-                console.log('📝 Form modificato - flag attivato');
-            });
+            console.log('🛡️ Protezione modifiche form inizializzata');
         }
         
-        // Funzione per controllare se ci sono modifiche non salvate
-        function controllaModifiche() {
-            // Se il form è stato modificato E non è in modalità modifica di una scheda esistente
-            if (FORM_MODIFICATO && !SCHEDA_IN_MODIFICA) {
-                return confirm('⚠️ ATTENZIONE!\n\nHai compilato dei campi ma non hai salvato.\n\nSei sicuro di voler creare una nuova scheda?\nI dati inseriti andranno persi.');
-            }
-            
-            // Se è in modifica di una scheda esistente
-            if (FORM_MODIFICATO && SCHEDA_IN_MODIFICA) {
-                return confirm('⚠️ ATTENZIONE!\n\nHai modificato alcuni campi ma non hai salvato.\n\nSei sicuro di voler creare una nuova scheda?\nLe modifiche andranno perse.');
-            }
-            
-            // Nessuna modifica, procedi senza conferma
-            return true;
-        }
-        
-        // Nuova funzione per il pulsante in fondo al form (con conferma)
-        function nuovaSchedaConConferma() {
-            console.log('🔔 [NUOVA SCHEDA CON CONFERMA] Controllo modifiche...');
-            
-            // Controlla se ci sono modifiche non salvate
-            if (controllaModifiche()) {
-                console.log('✅ [NUOVA SCHEDA CON CONFERMA] Utente ha confermato o nessuna modifica');
-                nuovaScheda();  // Chiama la funzione originale
-            } else {
-                console.log('❌ [NUOVA SCHEDA CON CONFERMA] Utente ha annullato');
-            }
-        }
-        
-        // Modifica la funzione nuovaScheda originale per resettare il flag
-        const nuovaSchedaOriginale = nuovaScheda;
-        nuovaScheda = function() {
-            nuovaSchedaOriginale();  // Chiama la funzione originale
-            
-            // Reset del flag modifiche dopo la pulizia
-            setTimeout(() => {
-                FORM_MODIFICATO = false;
-                console.log('🧹 Flag FORM_MODIFICATO resettato');
-            }, 300);
-        };
-        
-        // Modifica la funzione salvaScheda per resettare il flag dopo il salvataggio
-        document.getElementById('assistitoForm').addEventListener('submit', function(e) {
-            // Dopo il submit, resetta il flag (il form viene gestito da salvaScheda esistente)
-            setTimeout(() => {
-                FORM_MODIFICATO = false;
-                console.log('💾 Form salvato - flag FORM_MODIFICATO resettato');
-            }, 500);
+        // Reset flag dopo salvataggio
+        document.getElementById('assistitoForm')?.addEventListener('submit', (e) => {
+            FORM_MODIFICATO = false;
+            console.log('💾 Form salvato - protezione disattivata');
         });
         
-        // Inizializza il tracciamento quando il DOM è pronto
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', iniziaTracciamentoModifiche);
-        } else {
-            iniziaTracciamentoModifiche();
+        // Funzione per pulsante in fondo al form (con conferma)
+        function nuovaSchedaConConferma() {
+            console.log('🔵 Pulsante NUOVA SCHEDA (fondo form) premuto');
+            
+            // Se il form è stato modificato, chiedi conferma
+            if (FORM_MODIFICATO) {
+                const conferma = confirm(
+                    '⚠️ ATTENZIONE\n\n' +
+                    'Hai modificato il form senza salvare.\n\n' +
+                    'Vuoi davvero creare una nuova scheda?\n' +
+                    'Le modifiche NON salvate andranno perse.'
+                );
+                
+                if (!conferma) {
+                    console.log('❌ Utente ha annullato - dati preservati');
+                    return;  // Annulla operazione
+                }
+                
+                console.log('⚠️ Utente ha confermato - dati persi');
+            }
+            
+            // Pulisci il form (usa la funzione esistente)
+            nuovaScheda();
         }
+        
+        // Inizializza tracciamento al caricamento della pagina
+        window.addEventListener('DOMContentLoaded', () => {
+            initFormChangeTracking();
+            console.log('✅ Sistema protezione dati caricato');
+        });
+    </script>
+</body>
 </html>
-                  
