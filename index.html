@@ -2737,32 +2737,82 @@
     (function () {
         const MESI_EXTRA = ['Luglio 2026', 'Agosto 2026'];
 
-        function meseValido(valore) {
-            const v = String(valore || '').trim();
-            return v !== '' && v.toLowerCase() !== 'non pianificato';
+        function testoValido(v) {
+            const s = String(v || '').trim();
+            return s !== '' && s.toLowerCase() !== 'non specificato';
         }
 
-        function getPianificazioniScheda(s) {
-            const righe = [];
-
-            if (meseValido(s.meseInstallazionePrevisto)) {
-                righe.push({ tipo: 'Dispositivo', mese: s.meseInstallazionePrevisto });
-            }
-            if (meseValido(s.meseInstallazionePoltrona)) {
-                righe.push({ tipo: 'Poltrona', mese: s.meseInstallazionePoltrona });
-            }
-            if (meseValido(s.meseInstallazioneSensoreLuce)) {
-                righe.push({ tipo: 'Sensore Luce', mese: s.meseInstallazioneSensoreLuce });
-            }
-            if (meseValido(s.meseInstallazioneSensoreEcg)) {
-                righe.push({ tipo: 'Sensore ECG', mese: s.meseInstallazioneSensoreEcg });
-            }
-
-            return righe;
+        function meseValido(v) {
+            const s = String(v || '').trim();
+            return s !== '' && s.toLowerCase() !== 'non pianificato';
         }
 
-        function haQualsiasiPianificazione(s) {
-            return getPianificazioniScheda(s).length > 0;
+        function flagInstallatoSi(v) {
+            return String(v || '').trim().toUpperCase() === 'SI';
+        }
+
+        function teleassistenzaInstallata(s) {
+            return testoValido(s.IMEI) || testoValido(s.serialeDispositivo);
+        }
+
+        function buildPianificazioniPendenti(schede) {
+            const entries = [];
+
+            schede.forEach(s => {
+                if (meseValido(s.meseInstallazionePrevisto) && !teleassistenzaInstallata(s)) {
+                    entries.push({
+                        tipo: 'Dispositivo di TeleAssistenza',
+                        mese: s.meseInstallazionePrevisto,
+                        comune: s.comune || '',
+                        numeroScheda: s.numeroScheda || '',
+                        nome: s.nome || '',
+                        cognome: s.cognome || '',
+                        notePianificazione: s.notePianificazione || '',
+                        scheda: s
+                    });
+                }
+
+                if (meseValido(s.meseInstallazionePoltrona) && !flagInstallatoSi(s.installazionePoltrona)) {
+                    entries.push({
+                        tipo: 'Poltrona',
+                        mese: s.meseInstallazionePoltrona,
+                        comune: s.comune || '',
+                        numeroScheda: s.numeroScheda || '',
+                        nome: s.nome || '',
+                        cognome: s.cognome || '',
+                        notePianificazione: s.notePianificazione || '',
+                        scheda: s
+                    });
+                }
+
+                if (meseValido(s.meseInstallazioneSensoreLuce) && !flagInstallatoSi(s.installazioneSensoreLuce)) {
+                    entries.push({
+                        tipo: 'Sensore Luce',
+                        mese: s.meseInstallazioneSensoreLuce,
+                        comune: s.comune || '',
+                        numeroScheda: s.numeroScheda || '',
+                        nome: s.nome || '',
+                        cognome: s.cognome || '',
+                        notePianificazione: s.notePianificazione || '',
+                        scheda: s
+                    });
+                }
+
+                if (meseValido(s.meseInstallazioneSensoreEcg) && !flagInstallatoSi(s.installazioneSensoreEcg)) {
+                    entries.push({
+                        tipo: 'Sensore ECG',
+                        mese: s.meseInstallazioneSensoreEcg,
+                        comune: s.comune || '',
+                        numeroScheda: s.numeroScheda || '',
+                        nome: s.nome || '',
+                        cognome: s.cognome || '',
+                        notePianificazione: s.notePianificazione || '',
+                        scheda: s
+                    });
+                }
+            });
+
+            return entries;
         }
 
         function aggiungiMesiPianificabili() {
@@ -2821,17 +2871,12 @@
                 if (data.success) {
                     schedeCache = data.schede || [];
 
-                    installatiCache = schedeCache.filter(s => {
-                        const haImei = s.IMEI && String(s.IMEI).trim() !== '';
-                        const haSeriale = s.serialeDispositivo && String(s.serialeDispositivo).trim() !== '';
-                        return haImei || haSeriale;
-                    });
-
-                    pianificatiCache = schedeCache.filter(s => haQualsiasiPianificazione(s));
+                    installatiCache = schedeCache.filter(s => teleassistenzaInstallata(s));
+                    pianificatiCache = buildPianificazioniPendenti(schedeCache);
 
                     console.log('✅ Schede:', schedeCache.length);
-                    console.log('✅ Installati:', installatiCache.length);
-                    console.log('✅ Pianificati (incl. ECG/Luce/Poltrona):', pianificatiCache.length);
+                    console.log('✅ Installati TeleAssistenza:', installatiCache.length);
+                    console.log('✅ Pianificazioni pendenti indipendenti:', pianificatiCache.length);
 
                     aggiornaDashboard();
                     nascondiLoading();
@@ -2851,12 +2896,15 @@
             const filtroMese = document.getElementById('filter-mese-pianificati').value;
             const filtroComune = document.getElementById('filter-comune-pianificati').value;
 
-            let lista = pianificatiCache.filter(s => {
-                const pianificazioni = getPianificazioniScheda(s);
-                const matchMese = !filtroMese || pianificazioni.some(p => p.mese === filtroMese);
-                const matchComune = !filtroComune || s.comune === filtroComune;
-                return matchMese && matchComune;
-            });
+            let lista = pianificatiCache;
+
+            if (filtroMese) {
+                lista = lista.filter(item => item.mese === filtroMese);
+            }
+
+            if (filtroComune) {
+                lista = lista.filter(item => item.comune === filtroComune);
+            }
 
             document.getElementById('count-pianificati').textContent = lista.length;
 
@@ -2871,22 +2919,18 @@
             }
 
             let html = '<table class="list-table"><thead><tr>';
-            html += '<th>Scheda</th><th>Nome Completo</th><th>Comune</th><th>Pianificazioni</th><th>Note</th><th>Stato</th>';
+            html += '<th>Scheda</th><th>Nome Completo</th><th>Comune</th><th>Tipo Pianificazione</th><th>Mese Previsto</th><th>Note</th><th>Stato</th>';
             html += '</tr></thead><tbody>';
 
-            lista.forEach(s => {
-                const pianificazioni = getPianificazioniScheda(s);
-                const pianificazioniHtml = pianificazioni.map(p => {
-                    return `<div style="margin-bottom:4px;"><span class="badge badge-info">${p.tipo}: ${formatMeseInstallazione(p.mese)}</span></div>`;
-                }).join('');
-
-                html += `<tr onclick='mostraDettaglioAssistito(${JSON.stringify(s).replace(/'/g, "&apos;")})'>
-                    <td><strong>${s.numeroScheda || '-'}</strong></td>
-                    <td>${s.nome || ''} ${s.cognome || ''}</td>
-                    <td>📍 ${s.comune || ''}</td>
-                    <td>${pianificazioniHtml}</td>
-                    <td>${s.notePianificazione || '-'}</td>
-                    <td><span class="badge badge-info">📅 Pianificato</span></td>
+            lista.forEach(item => {
+                html += `<tr onclick='mostraDettaglioAssistito(${JSON.stringify(item.scheda).replace(/'/g, "&apos;")})'>
+                    <td><strong>${item.numeroScheda || '-'}</strong></td>
+                    <td>${item.nome || ''} ${item.cognome || ''}</td>
+                    <td>📍 ${item.comune || ''}</td>
+                    <td><span class="badge badge-info">${item.tipo}</span></td>
+                    <td>📅 ${formatMeseInstallazione(item.mese)}</td>
+                    <td>${item.notePianificazione || '-'}</td>
+                    <td><span class="badge badge-warning">⏳ Da installare</span></td>
                 </tr>`;
             });
 
