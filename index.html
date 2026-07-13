@@ -1048,6 +1048,15 @@
                     <option value="Favignana">Favignana</option>
                     <option value="Buseto Palizzolo">Buseto Palizzolo</option>
                 </select>
+
+                <label>Filtra per Tipo:</label>
+                <select id="filter-tipo-pianificati" onchange="filtraPianificati()">
+                    <option value="">🧩 Tutti i Tipi</option>
+                    <option value="Dispositivo di TeleAssistenza">Dispositivo di TeleAssistenza</option>
+                    <option value="Poltrona">Poltrona</option>
+                    <option value="Sensore Luce">Sensore Luce</option>
+                    <option value="Sensore ECG">Sensore ECG</option>
+                </select>
             </div>
             
             <div id="lista-pianificati-full" class="assistiti-container"></div>
@@ -2895,6 +2904,7 @@
         window.filtraPianificati = function () {
             const filtroMese = document.getElementById('filter-mese-pianificati').value;
             const filtroComune = document.getElementById('filter-comune-pianificati').value;
+            const filtroTipo = document.getElementById('filter-tipo-pianificati').value;
 
             let lista = pianificatiCache;
 
@@ -2906,13 +2916,17 @@
                 lista = lista.filter(item => item.comune === filtroComune);
             }
 
+            if (filtroTipo) {
+                lista = lista.filter(item => item.tipo === filtroTipo);
+            }
+
             document.getElementById('count-pianificati').textContent = lista.length;
 
             if (lista.length === 0) {
                 document.getElementById('lista-pianificati-full').innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">📅</div>
-                        <p>Nessuna installazione pianificata${filtroMese ? ' per ' + filtroMese : ''}${filtroComune ? ' a ' + filtroComune : ''}</p>
+                        <p>Nessuna installazione pianificata</p>
                     </div>
                 `;
                 return;
