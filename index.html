@@ -1031,6 +1031,8 @@
                     <option value="Aprile 2026">Aprile 2026</option>
                     <option value="Maggio 2026">Maggio 2026</option>
                     <option value="Giugno 2026">Giugno 2026</option>
+                    <option value="Luglio 2026">Luglio 2026</option>
+                    <option value="Agosto 2026">Agosto 2026</option>
                 </select>
                 
                 <label>Filtra per Comune:</label>
@@ -1456,6 +1458,8 @@
                                 <option value="Aprile 2026">Apr 2026</option>
                                 <option value="Maggio 2026">Mag 2026</option>
                                 <option value="Giugno 2026">Giu 2026</option>
+                                <option value="Luglio 2026">Lug 2026</option>
+                                <option value="Agosto 2026">Ago 2026</option>
                                 <option value="Non pianificato">Non pianificato</option>
                             </select>
                         </div>
@@ -1471,6 +1475,8 @@
                                 <option value="Aprile 2026">Apr 2026</option>
                                 <option value="Maggio 2026">Mag 2026</option>
                                 <option value="Giugno 2026">Giu 2026</option>
+                                <option value="Luglio 2026">Lug 2026</option>
+                                <option value="Agosto 2026">Ago 2026</option>
                                 <option value="Non pianificato">Non pianificato</option>
                             </select>
                         </div>
@@ -1486,6 +1492,8 @@
                                 <option value="Aprile 2026">Apr 2026</option>
                                 <option value="Maggio 2026">Mag 2026</option>
                                 <option value="Giugno 2026">Giu 2026</option>
+                                <option value="Luglio 2026">Lug 2026</option>
+                                <option value="Agosto 2026">Ago 2026</option>
                                 <option value="Non pianificato">Non pianificato</option>
                             </select>
                         </div>
@@ -1501,6 +1509,8 @@
                                 <option value="Aprile 2026">Apr 2026</option>
                                 <option value="Maggio 2026">Mag 2026</option>
                                 <option value="Giugno 2026">Giu 2026</option>
+                                <option value="Luglio 2026">Lug 2026</option>
+                                <option value="Agosto 2026">Ago 2026</option>
                                 <option value="Non pianificato">Non pianificato</option>
                             </select>
                         </div>
@@ -2722,6 +2732,179 @@
             console.log('✅ Sistema protezione dati caricato');
         });
     </script>
+
+    <script>
+    (function () {
+        const MESI_EXTRA = ['Luglio 2026', 'Agosto 2026'];
+
+        function meseValido(valore) {
+            const v = String(valore || '').trim();
+            return v !== '' && v.toLowerCase() !== 'non pianificato';
+        }
+
+        function getPianificazioniScheda(s) {
+            const righe = [];
+
+            if (meseValido(s.meseInstallazionePrevisto)) {
+                righe.push({ tipo: 'Dispositivo', mese: s.meseInstallazionePrevisto });
+            }
+            if (meseValido(s.meseInstallazionePoltrona)) {
+                righe.push({ tipo: 'Poltrona', mese: s.meseInstallazionePoltrona });
+            }
+            if (meseValido(s.meseInstallazioneSensoreLuce)) {
+                righe.push({ tipo: 'Sensore Luce', mese: s.meseInstallazioneSensoreLuce });
+            }
+            if (meseValido(s.meseInstallazioneSensoreEcg)) {
+                righe.push({ tipo: 'Sensore ECG', mese: s.meseInstallazioneSensoreEcg });
+            }
+
+            return righe;
+        }
+
+        function haQualsiasiPianificazione(s) {
+            return getPianificazioniScheda(s).length > 0;
+        }
+
+        function aggiungiMesiPianificabili() {
+            const selectIds = [
+                'filter-mese-pianificati',
+                'meseInstallazionePrevisto',
+                'meseInstallazionePoltrona',
+                'meseInstallazioneSensoreLuce',
+                'meseInstallazioneSensoreEcg'
+            ];
+
+            selectIds.forEach(id => {
+                const select = document.getElementById(id);
+                if (!select) return;
+
+                MESI_EXTRA.forEach(mese => {
+                    const esiste = Array.from(select.options).some(opt => opt.value === mese);
+                    if (esiste) return;
+
+                    const option = document.createElement('option');
+                    option.value = mese;
+                    option.textContent = mese;
+
+                    const nonPianificato = Array.from(select.options).find(opt => opt.value === 'Non pianificato');
+                    if (nonPianificato) {
+                        select.insertBefore(option, nonPianificato);
+                    } else {
+                        select.appendChild(option);
+                    }
+                });
+            });
+
+            console.log('✅ Mesi aggiunti: Luglio 2026, Agosto 2026');
+        }
+
+        window.setupPianificazioneListeners = function () {
+            aggiungiMesiPianificabili();
+        };
+
+        window.caricaSchede = function () {
+            mostraLoading('Caricamento dati...');
+
+            fetch(DEPLOY_URL, {
+                method: 'GET',
+                mode: 'cors'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('📊 Dati ricevuti:', data);
+
+                if (data.success) {
+                    schedeCache = data.schede || [];
+
+                    installatiCache = schedeCache.filter(s => {
+                        const haImei = s.IMEI && String(s.IMEI).trim() !== '';
+                        const haSeriale = s.serialeDispositivo && String(s.serialeDispositivo).trim() !== '';
+                        return haImei || haSeriale;
+                    });
+
+                    pianificatiCache = schedeCache.filter(s => haQualsiasiPianificazione(s));
+
+                    console.log('✅ Schede:', schedeCache.length);
+                    console.log('✅ Installati:', installatiCache.length);
+                    console.log('✅ Pianificati (incl. ECG/Luce/Poltrona):', pianificatiCache.length);
+
+                    aggiornaDashboard();
+                    nascondiLoading();
+                    mostraMessaggio('success', `✅ ${schedeCache.length} schede caricate`);
+                } else {
+                    throw new Error(data.error || 'Errore caricamento dati');
+                }
+            })
+            .catch(error => {
+                console.error('❌ Errore caricamento:', error);
+                nascondiLoading();
+                mostraMessaggio('error', '❌ Errore caricamento dati. Verifica la connessione e l\'URL Google Apps Script.');
+            });
+        };
+
+        window.filtraPianificati = function () {
+            const filtroMese = document.getElementById('filter-mese-pianificati').value;
+            const filtroComune = document.getElementById('filter-comune-pianificati').value;
+
+            let lista = pianificatiCache.filter(s => {
+                const pianificazioni = getPianificazioniScheda(s);
+                const matchMese = !filtroMese || pianificazioni.some(p => p.mese === filtroMese);
+                const matchComune = !filtroComune || s.comune === filtroComune;
+                return matchMese && matchComune;
+            });
+
+            document.getElementById('count-pianificati').textContent = lista.length;
+
+            if (lista.length === 0) {
+                document.getElementById('lista-pianificati-full').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📅</div>
+                        <p>Nessuna installazione pianificata${filtroMese ? ' per ' + filtroMese : ''}${filtroComune ? ' a ' + filtroComune : ''}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<table class="list-table"><thead><tr>';
+            html += '<th>Scheda</th><th>Nome Completo</th><th>Comune</th><th>Pianificazioni</th><th>Note</th><th>Stato</th>';
+            html += '</tr></thead><tbody>';
+
+            lista.forEach(s => {
+                const pianificazioni = getPianificazioniScheda(s);
+                const pianificazioniHtml = pianificazioni.map(p => {
+                    return `<div style="margin-bottom:4px;"><span class="badge badge-info">${p.tipo}: ${formatMeseInstallazione(p.mese)}</span></div>`;
+                }).join('');
+
+                html += `<tr onclick='mostraDettaglioAssistito(${JSON.stringify(s).replace(/'/g, "&apos;")})'>
+                    <td><strong>${s.numeroScheda || '-'}</strong></td>
+                    <td>${s.nome || ''} ${s.cognome || ''}</td>
+                    <td>📍 ${s.comune || ''}</td>
+                    <td>${pianificazioniHtml}</td>
+                    <td>${s.notePianificazione || '-'}</td>
+                    <td><span class="badge badge-info">📅 Pianificato</span></td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            document.getElementById('lista-pianificati-full').innerHTML = html;
+        };
+
+        window.mostraPianificati = function () {
+            filtraPianificati();
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            aggiungiMesiPianificabili();
+        });
+    })();
+    </script>
+
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
