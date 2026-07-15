@@ -1010,6 +1010,15 @@
                     <option value="Favignana">Favignana</option>
                     <option value="Buseto Palizzolo">Buseto Palizzolo</option>
                 </select>
+
+                <label>Filtra per Tipo:</label>
+                <select id="filter-tipo-installati" onchange="filtraInstallati()">
+                    <option value="">🧩 Tutti i Tipi</option>
+                    <option value="Dispositivo di TeleAssistenza">Dispositivo di TeleAssistenza</option>
+                    <option value="Poltrona">Poltrona</option>
+                    <option value="Sensore Luce">Sensore Luce</option>
+                    <option value="Sensore ECG">Sensore ECG</option>
+                </select>
             </div>
             
             <div id="lista-installati-full" class="assistiti-container"></div>
@@ -1884,10 +1893,16 @@
         
         function filtraInstallati() {
             const filtroComune = document.getElementById('filter-comune-installati').value;
+            const filtroTipo = document.getElementById('filter-tipo-installati').value;
             
             let lista = installatiCache;
+
             if (filtroComune) {
-                lista = installatiCache.filter(s => s.comune === filtroComune);
+                lista = lista.filter(item => item.comune === filtroComune);
+            }
+
+            if (filtroTipo) {
+                lista = lista.filter(item => item.tipo === filtroTipo);
             }
             
             document.getElementById('count-installati').textContent = lista.length;
@@ -1896,24 +1911,25 @@
                 document.getElementById('lista-installati-full').innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">📦</div>
-                        <p>Nessun dispositivo installato${filtroComune ? ' per ' + filtroComune : ''}</p>
+                        <p>Nessun dispositivo installato</p>
                     </div>
                 `;
                 return;
             }
             
             let html = '<table class="list-table"><thead><tr>';
-            html += '<th>Scheda</th><th>Nome Completo</th><th>Comune</th><th>Seriale (IMEI)</th><th>Mese Installazione</th><th>Stato</th>';
+            html += '<th>Scheda</th><th>Nome Completo</th><th>Comune</th><th>Tipo Installazione</th><th>Seriale (IMEI)</th><th>Mese Installazione</th><th>Stato</th>';
             html += '</tr></thead><tbody>';
             
-            lista.forEach(s => {
-                const seriale = s.IMEI || s.serialeDispositivo || '-';
-                html += `<tr onclick='mostraDettaglioAssistito(${JSON.stringify(s).replace(/'/g, "&apos;")})'>
-                    <td><strong>${s.numeroScheda || '-'}</strong></td>
-                    <td>${s.nome || ''} ${s.cognome || ''}</td>
-                    <td>📍 ${s.comune || ''}</td>
-                    <td><code>${seriale}</code></td>
-                    <td>${formatMeseInstallazione(s.meseInstallazionePrevisto)}</td>
+            lista.forEach(item => {
+                const seriale = item.seriale || '-';
+                html += `<tr onclick='mostraDettaglioAssistito(${JSON.stringify(item.scheda).replace(/'/g, "&apos;")})'>
+                    <td><strong>${item.numeroScheda || '-'}</strong></td>
+                    <td>${item.nome || ''} ${item.cognome || ''}</td>
+                    <td>📍 ${item.comune || ''}</td>
+                    <td><span class="badge badge-success">${item.tipo}</span></td>
+                    <td>${item.tipo === 'Dispositivo di TeleAssistenza' ? `<code>${seriale}</code>` : '-'}</td>
+                    <td>${item.mese ? formatMeseInstallazione(item.mese) : '-'}</td>
                     <td><span class="badge badge-success">✅ Installato</span></td>
                 </tr>`;
             });
@@ -2501,16 +2517,26 @@
                     scheda: schedaData 
                 })
             })
-            .then(() => {
-                console.log('🔍 [DEBUG 8] Fetch completato, verifica risposta...');
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Errore HTTP ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('🔍 [DEBUG 8] Risposta backend:', data);
+
+                if (!data || data.success !== true) {
+                    throw new Error((data && (data.error || data.message)) || 'Salvataggio non confermato dal server');
+                }
+
                 nascondiLoading();
                 mostraMessaggio('success', `✅ Scheda ${schedaData.numeroScheda} ${isNuovaScheda ? 'creata con successo' : 'aggiornata con successo'}!`);
                 setTimeout(() => {
                     console.log('🔍 [DEBUG 9] Ricaricamento schede...');
                     caricaSchede();
-                    // ✅ FIX v3.5.3: Reset form silenzioso dopo INSERT, nessun dialog
+
                     if (isNuovaScheda) {
-                        // Reset form silenzioso (no dialog)
                         SCHEDA_IN_MODIFICA = false;
                         document.getElementById('assistitoForm').reset();
                         impostaDataOggi();
@@ -2518,24 +2544,20 @@
                         document.getElementById('ageDisplay').textContent = '🎂 - anni';
                         console.log('✅ Nuovo assistito creato, form resettato per prossimo inserimento');
                     } else {
-                        // Dopo UPDATE: reset flag e torna alla dashboard
                         SCHEDA_IN_MODIFICA = false;
                         console.log('✅ Scheda modificata con successo, flag reset');
                     }
+
                     console.log('🔍 [DEBUG 10] Switch a dashboard...');
                     switchTab('dashboard');
                     console.log('✅ [DEBUG 11] Procedura completata con successo');
-                }, 1500);
+                }, 1200);
             })
             .catch(error => {
-                console.error('❌ [DEBUG 8] Errore fetch:', error);
+                console.error('❌ [DEBUG 8] Errore salvataggio:', error);
                 console.error('❌ Stack:', error.stack);
                 nascondiLoading();
-                mostraMessaggio('info', '📤 Scheda inviata (verifica manualmente su Google Sheet)');
-                setTimeout(() => { 
-                    caricaSchede();
-                    SCHEDA_IN_MODIFICA = false; // Reset anche in caso di errore
-                }, 2000);
+                mostraMessaggio('error', '❌ Salvataggio NON riuscito: ' + error.message);
             });
             
             } catch (error) {
@@ -2620,16 +2642,25 @@
                     obiettivi: obiettivi
                 })
             })
-            .then(() => {
-                console.log('💾 [5/5] ✅ Richiesta POST inviata al backend');
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Errore HTTP ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('💾 [5/5] Risposta backend obiettivi:', data);
+                if (!data || data.success !== true) {
+                    throw new Error((data && (data.error || data.message)) || 'Salvataggio obiettivi non confermato dal server');
+                }
                 nascondiLoading();
-                alert('✅ Obiettivi salvati localmente!\n\n📋 Per verificare la sincronizzazione:\n1. Apri Google Sheet\n2. Vai al foglio "Obiettivi"\n3. Verifica che i valori siano aggiornati');
+                alert('✅ Obiettivi salvati con successo su Google Sheet!');
                 toggleConfigPanel();
             })
             .catch(e => {
                 console.error('💾 [5/5] ⚠️ Errore richiesta POST:', e);
                 nascondiLoading();
-                alert('⚠️ Errore salvataggio:\n' + e.message + '\n\nObiettivi salvati solo localmente.\nVerifica connessione internet e Google Apps Script.');
+                alert('❌ Salvataggio obiettivi NON riuscito: ' + e.message);
             });
         }
         
@@ -2824,6 +2855,70 @@
             return entries;
         }
 
+        function buildInstallazioniEffettuate(schede) {
+            const entries = [];
+
+            schede.forEach(s => {
+                if (teleassistenzaInstallata(s)) {
+                    entries.push({
+                        tipo: 'Dispositivo di TeleAssistenza',
+                        mese: s.meseInstallazionePrevisto || '',
+                        comune: s.comune || '',
+                        numeroScheda: s.numeroScheda || '',
+                        nome: s.nome || '',
+                        cognome: s.cognome || '',
+                        seriale: s.IMEI || s.serialeDispositivo || '',
+                        notePianificazione: s.notePianificazione || '',
+                        scheda: s
+                    });
+                }
+
+                if (flagInstallatoSi(s.installazionePoltrona)) {
+                    entries.push({
+                        tipo: 'Poltrona',
+                        mese: s.meseInstallazionePoltrona || '',
+                        comune: s.comune || '',
+                        numeroScheda: s.numeroScheda || '',
+                        nome: s.nome || '',
+                        cognome: s.cognome || '',
+                        seriale: '',
+                        notePianificazione: s.notePianificazione || '',
+                        scheda: s
+                    });
+                }
+
+                if (flagInstallatoSi(s.installazioneSensoreLuce)) {
+                    entries.push({
+                        tipo: 'Sensore Luce',
+                        mese: s.meseInstallazioneSensoreLuce || '',
+                        comune: s.comune || '',
+                        numeroScheda: s.numeroScheda || '',
+                        nome: s.nome || '',
+                        cognome: s.cognome || '',
+                        seriale: '',
+                        notePianificazione: s.notePianificazione || '',
+                        scheda: s
+                    });
+                }
+
+                if (flagInstallatoSi(s.installazioneSensoreEcg)) {
+                    entries.push({
+                        tipo: 'Sensore ECG',
+                        mese: s.meseInstallazioneSensoreEcg || '',
+                        comune: s.comune || '',
+                        numeroScheda: s.numeroScheda || '',
+                        nome: s.nome || '',
+                        cognome: s.cognome || '',
+                        seriale: '',
+                        notePianificazione: s.notePianificazione || '',
+                        scheda: s
+                    });
+                }
+            });
+
+            return entries;
+        }
+
         function aggiungiMesiPianificabili() {
             const selectIds = [
                 'filter-mese-pianificati',
@@ -2880,11 +2975,11 @@
                 if (data.success) {
                     schedeCache = data.schede || [];
 
-                    installatiCache = schedeCache.filter(s => teleassistenzaInstallata(s));
+                    installatiCache = buildInstallazioniEffettuate(schedeCache);
                     pianificatiCache = buildPianificazioniPendenti(schedeCache);
 
                     console.log('✅ Schede:', schedeCache.length);
-                    console.log('✅ Installati TeleAssistenza:', installatiCache.length);
+                    console.log('✅ Installazioni effettuate indipendenti:', installatiCache.length);
                     console.log('✅ Pianificazioni pendenti indipendenti:', pianificatiCache.length);
 
                     aggiornaDashboard();
